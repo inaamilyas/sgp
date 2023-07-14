@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- StyleSheets -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href=" {% static '/bootstrap/css/bootstrap.css' %} ">
+
+    <!-- Font Awesome-->
+    <link href="{% static '/fontawesome/css/all.css' %} " rel="stylesheet">
+
+    <!-- Custom StyleSheet  -->
+    <link rel="stylesheet" href="{% static '/css/style.css' %} ">
+</head>
+
+<body>
+    <section class="container-fluid login-section">
+        <div class="row">
+            <!-- <div class="col-md-6 login-left">
+               
+                <h1>Login</h1>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque rem, non, laboriosam rerum
+                    mollitia doloremque omnis illum deserunt unde architecto sunt et consequuntur!</p>
+                
+                <a href="/signup" class="btn btn-dark">Sign Up here</a> -->
+            <!-- </div> -->
+            <div class="col-12 login-right">
+                <div class="right-content">
+                    <form action="" method="post" class="login-form" id="login-form">
+                        {% csrf_token %}
+                        <h3 class="form-heading">Login Form</h3>
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger">
+                            {{message}}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <div class="form-group my-3">
+                            <label for="username" class="label">Username</label>
+                            <input type="text" class="form-control form-input" id="username" name="username"
+                                placeholder="Enter username">
+                                <i class="fa fa-check-circle"></i>
+                                <i class="fa fa-exclamation-circle"></i>
+                                <small>Error Message</small>
+                        </div>
+                        <div class="form-group my-3">
+                            <label for="password" class="label">Password</label>
+                            <input type="password" class="form-control form-input" id="password" name="password"
+                                placeholder='Password'>
+                                <i class="fa fa-check-circle"></i>
+                                <i class="fa fa-exclamation-circle"></i>
+                                <small>Error Message</small>
+                        </div>
+                        <div class="form-group my-3 form-btn-container">
+                            <div class="remember-me">
+                            </div>
+                            <a href="{% url 'ForgetPassword' %}" class="btn forget-btn">Forget Password?</a>
+
+                        </div>
+                        <button type="submit" disabled class="btn btn-primary login-btn"  id="login-btn">Login</button>
+                    </form>
+                    <div class="or">
+                        <div class="line"></div>
+                        <span>OR</span>
+                        <div class="line"></div>
+                    </div>
+
+                    <div class="login-signin-container">
+                        <p class="text-center">Don't have an Account? </p>
+                        <a href="/signup" class="btn btn-dark login-signin-btn">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Javascript -->
+    <script src="{% static '/bootstrap/js/bootstrap.js' %}"></script>
+    <script src="{% static '/jQuery/jQuery.min.js' %}"></script>
+    <!-- Validation Javascript -->
+    <script src="{% static '/js/loginValidation.js' %}"></script>
+
+</body>
+
+</html>

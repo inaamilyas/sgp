@@ -1,0 +1,48 @@
+{% extends "adminbase.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+
+   <div class="content container-fluid">
+
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Add New Query</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'Dashboard' %}">Dashboard</a></li>
+                  <li class="breadcrumb-item"><a href="{% url 'Queries' %}">Queries</a></li>
+                  <li class="breadcrumb-item active">Add Query</li>
+               </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+            </div>
+         </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+               <div class="card-body">
+                  <form method="post" enctype="multipart/form-data" class="px-5">
+                     <div class="col-12">
+                        <h5 class="form-title"><span>Query Information</span></h5>
+                     </div>
+                     {% csrf_token %}
+                    {{queryForm.media}}
+                    {{queryForm.as_p}}
+                    <div class="col-12">
+                     <button type="submit" class="btn btn-primary">Add</button>
+                  </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+{% endblock content %}

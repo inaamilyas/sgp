@@ -1,0 +1,81 @@
+{% extends "adminbase.html" %}
+
+{% block title %}Update User| SGP{% endblock title %}Update | SGP
+
+
+{% block content %}
+<div class="page-wrapper">
+
+   <div class="content container-fluid">
+
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Edit User</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                  <li class="breadcrumb-item"><a href="/admin1/users/">Users</a></li>
+                  <li class="breadcrumb-item active">{{user.first_name}} {{user.last_name}}</li>
+               </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+               <!-- <a href="#" class="btn btn-primary">Add Users <span class="fa fa-plus
+                        ml-1"></span></a> -->
+               <!-- <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-plus"></i> Download</a>
+                  <a href="add-student.html" class="btn btn-primary"><i class="fas fa-plus"></i></a> -->
+            </div>
+         </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+               <div class="card-body">
+                  <form method="post">
+                     {% csrf_token %}
+                     <div class="row">
+                        <div class="col-12">
+                           <h5 class="form-title"><span>User Information</span></h5>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>First Name</label>
+                              <input type="text" class="form-control" value="{{user.first_name}}" name="f_name">
+                           </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>Last Name</label>
+                              <input type="text" class="form-control" value="{{user.last_name}}" name="l_name">
+                           </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>Username</label>
+                              <input type="text" class="form-control" value="{{user.username}}" name="username">
+                           </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>Email</label>
+                              <input type="text" class="form-control" value="{{user.email}}" name="email">
+                           </div>
+                        </div>
+                        <div class="col-12">
+                           <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock content %}

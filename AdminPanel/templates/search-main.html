@@ -1,0 +1,246 @@
+{% extends "adminbase.html" %}
+{% block title %}Search | SGP{% endblock title %}
+
+
+{% block content %}
+
+
+<!-- Main Content Section -->
+<div class="page-wrapper">
+ 
+   <div class="content container-fluid">
+
+      <div class="page-header">
+         <div class="row">
+            <div class="col-sm-12">
+               <h5 class="">Showing results for <b style="overflow-wrap: break-word;">{{search_query}}</b></h5>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'Dashboard' %}">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Search</li>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <hr>
+
+      <div class="row">
+         {% if messages %}
+         {% for message in messages %}
+         <div class="alert alert-danger">
+            {{message}}
+         </div>
+         {% endfor %}
+         {% endif %}
+
+         {% if departments %}
+         <div class="col-12">
+            <h4>Departments Found</h4>
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Name</th>
+                              <th class="text-right">Action</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+
+                           {% for department in departments %}
+                           <tr>
+                              <td>{{department.dep_id}}</td>
+                              <td>
+                                 <h2 class="table-avatar">
+                                    <a href="#">{{department.dep_name}}</a>
+                                 </h2>
+                              </td>
+                              <td class="text-right">
+                                 <div class="actions">
+                                    <a href="/admin1/department-details/{{department.dep_slug}}"
+                                       class="btn btn-sm border-1 mr-2 view-btn">
+                                       <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/admin1/update-department/{{department.dep_slug}}"
+                                       class="btn btn-sm mr-2 update-btn">
+                                       <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="/admin1/delete-department/{{department.dep_slug}}"
+                                       class="btn btn-sm delete-btn">
+                                       <i class="fas fa-trash"></i>
+                                    </a>
+                                 </div>
+                              </td>
+                           </tr>
+                           {% endfor %}
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <hr>
+         {% endif %}
+
+         {% if courses %}
+         <div class="col-12">
+            <h4>Courses Found</h4>
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Course Name</th>
+                              <th>Department</th>
+                              <th class="text-right">Action</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+
+                           {% for course in courses %}
+                           <tr>
+                              <td>{{course.course_id}}</td>
+                              <td>
+                                 <h2 class="table-avatar">
+                                    <a href="/admin1/course-details/{{course.course_slug}}"
+                                       class="avatar avatar-sm mr-2">
+                                       <img class="avatar-img rounded-circle" src="/media/{{course.course_pic}}/"
+                                          alt="User Image">
+                                    </a>
+                                    <a href="/admin1/course-details/{{course.course_slug}}">{{course.course_name}}</a>
+                                 </h2>
+                              </td>
+                              <td>{{course.department.dep_name}}</td>
+                              <td class="text-right">
+                                 <div class="actions">
+                                    <a href="/admin1/course-details/{{course.course_slug}}"
+                                       class="btn btn-sm border-1 mr-2 view-btn">
+                                       <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/admin1/update-course/{{course.course_slug}}"
+                                       class="btn btn-sm mr-2 update-btn">
+                                       <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="/admin1/delete-course/{{course.course_slug}}"
+                                       class="btn btn-sm delete-btn">
+                                       <i class="fas fa-trash"></i>
+                                    </a>
+                                 </div>
+                              </td>
+                           </tr>
+                           {% endfor %}
+
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <hr>
+         {% endif %}
+
+         {% if lessons %}
+         <div class="col-12">
+            <h4>Lessons Found</h4>
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Title</th>
+                              <th>Course</th>
+                              <th>Views</th>
+                              <th>Date</th>
+                              <th class="text-right">Action</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+
+                           {% for lesson in lessons %}
+                           <tr>
+                              <td>{{lesson.lesson_id}}</td>
+                              <td>
+                                 <h2 class="table-avatar">
+                                    <a href="#">{{lesson.lesson_title}}</a>
+                                 </h2>
+                              </td>
+                              <td>{{lesson.course.course_name}}</td>
+                              <td>{{lesson.views}}</td>
+                              <td>{{lesson.time}}</td>
+                              <td class="text-right">
+                                 <div class="actions">
+                                    <a href="/admin1/lesson-details/{{lesson.lesson_slug}}"
+                                       class="btn btn-sm border-1 mr-2 view-btn">
+                                       <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/admin1/update-lesson/{{lesson.lesson_slug}}"
+                                       class="btn btn-sm mr-2 update-btn">
+                                       <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="/admin1/delete-lesson/{{lesson.lesson_slug}}"
+                                       class="btn btn-sm delete-btn">
+                                       <i class="fas fa-trash"></i>
+                                    </a>
+                                 </div>
+                              </td>
+                           </tr>
+                           {% endfor %}
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <hr>
+         {% endif %}
+
+         {% if queries %}
+         <div class="col-12">
+            <h4>Queries</h4>
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+
+                  </div>
+               </div>
+            </div>
+         </div>
+         <hr>
+         {% endif %}
+
+         {% if answers %}
+         <div class="col-12">
+            <h4>Answers</h4>
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+
+                  </div>
+               </div>
+            </div>
+         </div>
+         <hr>
+
+         {% endif %}
+
+         {% if not answers and not department and not courses and not lessons and not queries  %}
+         <div class="alert alert-danger w-75 d-block m-auto">
+            <h6>No Results found for <h5 style="overflow-wrap: break-word;">{{search_query}}</h5></h6>
+         </div>
+         {% endif %}
+
+         
+      </div>
+
+
+
+   </div>
+
+</div>
+{% endblock content %}

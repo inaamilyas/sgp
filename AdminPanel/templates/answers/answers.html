@@ -1,0 +1,84 @@
+{% extends "adminbase.html" %}
+{% block title %}Answers | SGP{% endblock title %}
+
+{% block content %}
+
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Answers</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Answers</li>
+               </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+               <a href=" {% url 'AddQuery' %} " class="btn btn-primary">Add Answer <span class="fa fa-plus
+                        ml-1"></span></a>
+            </div>
+         </div>
+      </div>
+      <hr>
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Answer</th>
+                              <th>Query</th>
+                              <th>User</th>
+                              <th>Date</th>
+                              <th class="text-right">Action</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+
+                           {% for answer in answers %}
+                           <tr>
+                              <td>{{answer.ans_id}}</td>
+                              <td>
+                                 <h2 class="table-avatar">
+                                    <a href="#">{{answer.ans_desc}}</a>
+                                 </h2>
+                              </td>
+                              <td>{{answer.query.query_title}}</td>
+                              <td>{{answer.user.username}}</td>
+                              <td>{{answer.created_at}}</td>
+                              <td class="text-right">
+                                 <div class="actions">
+                                    <a href="/admin1/answer-details/{{answer.ans_id}}"
+                                       class="btn btn-sm border-1 mr-2 view-btn">
+                                       <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/admin1/update-answer/{{answer.ans_id}}"
+                                       class="btn btn-sm mr-2 update-btn">
+                                       <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="/admin1/delete-answer/{{answer.ans_id}}"
+                                       class="btn btn-sm delete-btn">
+                                       <i class="fas fa-trash"></i>
+                                    </a>
+                                 </div>
+                              </td>
+                           </tr>
+                           {% endfor %}
+
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+   </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,74 @@
+{% extends "adminbase.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+
+   <div class="content container-fluid">
+
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Add New Course</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                  <li class="breadcrumb-item"><a href="/admin1/courses/">Courses</a></li>
+                  <li class="breadcrumb-item active">Add Course</li>
+               </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+            </div>
+         </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+               <div class="card-body">
+                  <form method="post" enctype="multipart/form-data">
+                     {% csrf_token %}
+                     <div class="row">
+                        <div class="col-12">
+                           <h5 class="form-title"><span>Course Information</span></h5>
+                        </div>
+
+                        <div class="col-12">
+                           <div class="form-group">
+                              <label>Course Name</label>
+                              <input type="text" class="form-control" required name="course_name">
+                           </div>
+                        </div>
+                        <div class="col-12">
+                           <div class="form-group">
+                              <label>Course Image</label>
+                              <input type="file" class="form-control" required name="course_pic">
+                           </div>
+                        </div>
+                        <div class="col-12">
+                           <div class="form-group">
+                              <label>Department</label>
+                              <select class="form-control" required name="department" id="department">
+                                 {% for department in departments %}
+                                 <option value="{{department.dep_slug}}">{{department.dep_name}}</option>
+                                 
+                                 {% endfor %}
+                              </select>
+                              
+                           </div>
+                        </div>
+
+                        <div class="col-12">
+                           <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+{% endblock content %}

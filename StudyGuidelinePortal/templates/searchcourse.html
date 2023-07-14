@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Search Courses | Study Guideline Portal{% endblock title %}
+
+{% block content %}
+{% load static %}
+<div class="courses-header container-fluid">
+    <h1>Courses</h1>
+</div>
+<div class="container-fluid">
+    <section class="container all-courses py-5">
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-8 mb-4">
+                <form action="/search-course" method="get">
+                    <input type="text" placeholder="Search Courses" name="search-query" class="search-input" required>
+                    <button type="submit" class="search-btn">Search</button>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12 px-5">
+                <h2 class="course-heading">{{page_heading}}</h2>
+                <div class="row">
+
+                    <!-- Course Card  -->
+                    {% if course_details|length < 1 %}
+                        <div class="alert alert-danger">
+                            No Search results found for "<u><em style="font-size: 20px;"><b>{{search_query}}</b></em></u>"
+                        </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        Results found for "<u><em style="font-size: 20px;"><b>{{search_query}}</b></em></u>"
+                    </div>
+                        {% for course, first_lesson, no_of_lessons in course_details %}
+                        <div class="col-sm-6 col-md-4 col-xl-3 mb-3">
+                            <div class="card course-card border-0 p-0">
+                                <div class="course-img">
+                                    <img src="/media/{{course.course_pic}}" alt="">
+                                </div>
+                                <div class="course-info">
+                                    <small class="category">{{course.department.dep_name}}</small>
+                                    <h4>{{course.course_name}}</h4>
+                                    <div class="course-meta">
+                                        <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
+                                        <span class="ratings"><i class="fa-sharp fa-regular fa-star-half-stroke"></i>
+                                            {{course.rating}}</span>
+                                        <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i class="fa-sharp fa-solid fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    
+                    {% endif %}
+                    
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock content %}

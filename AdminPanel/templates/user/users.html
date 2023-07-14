@@ -1,0 +1,94 @@
+{% extends "adminbase.html" %}
+{% block title %}
+Users | SGP
+{% endblock title %}
+
+{% block content %}
+
+<div class="page-wrapper">
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Users</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Users</li>
+               </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+               <a href="add-user.html" class="btn btn-primary">Add Users <span class="fa fa-plus
+                        ml-1"></span></a>
+               <!-- <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-plus"></i> Download</a>
+                  <a href="add-student.html" class="btn btn-primary"><i class="fas fa-plus"></i></a> -->
+            </div>
+         </div>
+      </div>
+      <hr>
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card card-table">
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>First Name</th>
+                              <th>Last Name</th>
+                              <th>Username</th>
+                              <th>Email</th>
+                              <th>Date Joined</th>
+                              <th class="text-right">Action</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+
+                           {% for user in users %}
+                           <tr>
+                              <td>{{user.id}}</td>
+                              <td>
+                                 <h2 class="table-avatar">
+                                    <a href="/admin1/user-details/{{user.id}}" class="avatar avatar-sm mr-2">
+                                       <img class="avatar-img rounded-circle" src="/media/{{user.profile.profile_pic}}"
+                                          alt="User Image">
+                                    </a>
+                                    <a href="/admin1/user-details/{{user.id}}">{{user.first_name}}</a>
+                                    {% comment %} <a href="{% url 'UserDetails' %}">{{user.first_name}}</a>
+                                    {% endcomment %}
+                                 </h2>
+                              </td>
+                              <td>{{user.last_name}}</td>
+                              <td>{{user.username}}</td>
+                              <td>{{user.email}}</td>
+                              <td>{{user.date_joined}}</td>
+                              <td class="text-right">
+                                 <div class="actions">
+                                    <a href="/admin1/user-details/{{user.id}}"
+                                       class="btn btn-sm border-1 mr-2 view-btn">
+                                       <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/admin1/update-user/{{user.id}}" class="btn btn-sm mr-2 update-btn">
+                                       <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="/admin1/delete-user/{{user.id}}" class="btn btn-sm delete-btn">
+                                       <i class="fas fa-trash"></i>
+                                    </a>
+                                 </div>
+                              </td>
+                           </tr>
+                           {% endfor %}
+
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+   </div>
+</div>
+
+{% endblock content %}

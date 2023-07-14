@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}All Queries | SGP{% endblock title %}
+
+{% load static %}
+{% block content %}
+
+<section class="container-fluid questions">
+    <div class="row">
+        <div class="col-md-2 ques-sidebar">
+            <ul>
+                <li><a href="/queries">All Questions</a></li>
+                <li><a href="/latest-queries">Latest Questions</a></li>
+                <li><a href="/popular-queries">Popular Questions</a></li>
+            </ul>
+        </div>
+        <div class="col-md-8 show-ques">
+            <div class="container">
+                <h1 class="bg-white p-3">{{type}} Questions</h1>
+                <!-- Question card  -->
+                {% for query, answer_count in queries %}
+                <div class="question-card">
+                    <div class="card-top">
+                        <div>
+                            <span>{{query.created_at}}</span>
+                            <span>Subject : <b>{{query.course.course_name}}</b></span>
+                        </div>
+                        <span>Asked by : <b>{{query.user.first_name}}</b></span>
+                    </div>
+                    <div class="card-middle">
+                        <h4 class="ques-title"> <a href="/query/{{query.query_slug}}/">
+                                {{query.query_title}}</a>
+                        </h4>
+                        <span class="ques-desc">{{query.query_desc | safe}}</span>
+                    </div>
+                    <div class="card-bottom">
+                        <div>
+                            <a href="/query/{{query.query_slug}}/" class="btn ">{{answer_count}} answers</a>
+                            <a href="#" class="btn ">{{query.views}} Views</a>
+                        </div>
+                        <a href="/query/{{query.query_slug}}/" class="btn btn-dark ans-btn">Answer</a>
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+
+            </div>
+        </div>
+        <div class="col-md-2 ques-right">
+            <a href="/ask-query/" class="btn btn-primary ask-ques-btn">Ask A Question</a>
+            <div class="total-ques-card">
+                Questions<span>{{total_queries}}</span>
+
+            </div>
+            <div class="total-ans-card">
+                Answers<span>{{total_answers}}</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

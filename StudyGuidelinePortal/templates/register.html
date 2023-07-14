@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup</title>
+
+    <!-- StyleSheets -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href=" {% static '/bootstrap/css/bootstrap.css' %} ">
+
+    <!-- Owl carousel -->
+    <link href="{% static '/owl_carousel/owlcarousel.min.css' %}" rel="stylesheet">
+    <link href="{% static '/owl_carousel/owltheme.min.css' %} " rel="stylesheet">
+
+    <!-- Font Awesome-->
+    <link href="{% static '/fontawesome/css/all.css' %} " rel="stylesheet">
+
+    <!-- Custom StyleSheet  -->
+    <link rel="stylesheet" href="{% static '/css/style.css' %} ">
+
+</head>
+
+<body>
+    <section class="container-fluid signup-section">
+        <div class="row">
+            <!-- <div class="col-md-6 signup-left">
+                <h1>Sign Up</h1>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque rem, non, laboriosam rerum
+                    mollitia doloremque omnis illum deserunt unde architecto sunt et consequuntur!</p>
+                <a href="/login" class="btn btn-dark">Login here</a>
+            </div> -->
+            <div class="col-12 signup-right">
+                <div class="right-content">
+                    <!-- Displaying messages if any  -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-danger">
+                                    {{message}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    <form action="" method="post" id="signup-form" class="signup-form">
+                        {% csrf_token %}
+                        <h3 class="form-heading">Sign Up Form</h3>
+
+                        <div class="form-group">
+                            <!-- <label for="username" class="label">Username</label> -->
+                            <input type="text" class="form-control form-input" id="fname" name="fname"
+                                placeholder="Enter First name">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+                        <div class="form-group">
+                            <!-- <label for="username" class="label">Username</label> -->
+                            <input type="text" class="form-control form-input" id="lname" name="lname"
+                                placeholder="Enter Last name">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+                        <div class="form-group">
+                            <!-- <label for="username" class="label">Username</label> -->
+                            <input type="text" class="form-control form-input" id="username" name="username"
+                                placeholder="Enter username">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+                        <div class="form-group">
+                            <!-- <label for="email" class="label">Email address</label> -->
+                            <input type="email" class="form-control form-input" id="email" name="email"
+                                placeholder="Enter email">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control form-input" id="confirm-email" name="confirm-email"
+                                placeholder="Enter email again">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+                        <div class="form-group">
+                            
+                            <input type="password" class="form-control form-input" id="password" name="password"
+                                placeholder="Password">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+                        <div class="form-group">
+                            <!-- <label for="confirm-password" class="label">Confirm Password</label> -->
+                            <input type="password" class="form-control form-input" id="confirm-password"
+                                name="confirm-password" placeholder="Confirm Password">
+                            <i class="fa fa-check-circle"></i>
+                            <i class="fa fa-exclamation-circle"></i>
+                            <small>Error Message</small>
+                        </div>
+
+                        <button type="submit" disabled class="btn btn-primary signup-btn" id="signup-btn">Sign
+                            Up</button>
+                    </form>
+                    <div class="or">
+                        <div class="line"></div>
+                        <span>OR</span>
+                        <div class="line"></div>
+                    </div>
+
+                    <div class="signup-login-container">
+                        <span class="text-center">Already have an Account? </span>
+                        <a href="/login" class="btn btn-dark signup-login-btn">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Javascript -->
+    <script src="{% static '/bootstrap/js/bootstrap.js' %}"></script>
+    <script src="{% static '/jQuery/jQuery.min.js' %}"></script>
+    
+    <!--Signup Form Validation Script  -->
+    <script src="{% static '/js/registrationValidation.js' %}"></script>
+   
+</body>
+
+</html>

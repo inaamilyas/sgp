@@ -1,0 +1,82 @@
+icons 
+username
+password
+login 
+signup
+email
+arrow icon ->
+social icons
+about 
+contact 
+privacy
+terms of condition
+search
+prev nxt 
+like btn
+user icon
+read more 
+
+Work
+sorting nested list in python (done)
+add rich text editor in user side (done)
+signup login form validation in Javascipt (done)
+Auto slug field (done)
+Profile Page (Done)
+count of queryset (Done) length tag
+virtual environment (Done)
+images are not saved in the folder (Done)
+error404 in django (done) designing
+Verify email (done) testing
+forget password (done)
+department wise courses (done)
+teacher information (skip)
+no lesson or courses questions to show (done)
+redirect to admin login page after logout and user to user login page (Done)
+like and liked icon (done)
+preview of choosen image using file field in form using js (done)
+count views using ajax (done)
+lesson watch time using ajax(done)
+resend email (done)
+error at view question without login (done)
+how to change password in django (done)
+confirm delete page
+check type of message in template 
+time formatting of lessons 
+back button
+how to add image field in django form 
+how to send context data with redirect
+Login to give rating styling
+login to add answer
+how to stop setInternal function in js
+run a function only when the screen is in focus in js 
+
+Pages 
+sign up
+login
+index
+courses
+lesson
+questions
+answer
+add questions
+add answers
+profile with previous activities
+about 
+contact 
+confirm delete page
+
+
+Fixes of Bugs
+Show courses without lessons and reviews (fixed)
+
+Know 
+why renameImage is called without paranthesis in models 
+    because it acts as a property of class that is why it is called without paranthesis
+
+
+icons 
+<i class="fa fa-eye-slash" aria-hidden="true"></i>
+<i class="fa fa-eye" aria-hidden="true"></i>
+
+Course Link
+http://ccw.vcomsats.edu.pk/Home/ListContent?search=&disciplineId=1&typeId=1

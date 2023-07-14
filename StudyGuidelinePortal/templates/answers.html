@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}{{query.query_title}}{% endblock title %}
+
+{% load static %}
+{% block content %}
+
+<section class="container-fluid questions">
+    <div class="row">
+        <div class="col-md-2 ans-sidebar">
+            <ul>
+                <!-- <li><a href="#">All Questions</a></li>
+                    <li><a href="#">Latest Questions</a></li>
+                    <li><a href="#">Popular Questions</a></li> -->
+            </ul>
+        </div>
+        <div class="col-md-8 show-ques">
+            <div class="container">
+                <!-- Question Details Card -->
+                <div class="question-details-card">
+                    <div class="card-top">
+                        <div class="ask-ques-profile">
+                            <img src="{% static 'images/users/defaultuser.png' %}" alt="">
+                            <span>Asked by : {{query.user.first_name}}</span>
+                        </div>
+                        <div>
+                            <span>{{query.created_at}}</span>
+                            <span>Subject: {{query.course.course_name}}</span>
+                        </div>
+                    </div>
+                    <div class="card-middle">
+                        <h4 class="ques-title"> <a href="#">{{query.query_title}}</a></h4>
+                        <p class="ques-desc">{{query.query_desc | safe}}</p>
+                    </div>
+                    <div class="card-bottom">
+                        <div>
+                            <a href="#" class="btn">1234 Answers</a>
+                            <a href="#" class="btn"><span id="query-views-span">{{query.views}}</span> views</a>
+                            <a href="#" id="query-details-slug" class="no-visibility">{{query.query_slug}}</a>
+                        </div>
+                        {% if request.user.id == query.user.id %}
+                        <div>
+                            <a href="/edit-query/{{query.query_slug}}/" class="btn btn-sm bg-success-light mr-2">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="/del-query/{{query.query_slug}}/" class="btn btn-sm bg-danger text-white">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% comment %} <a href="#" class="btn btn-dark ans-btn">Answer Form</a> {% endcomment %}
+                    </div>
+                </div>
+
+                <hr>
+                <div class="container ans-container">
+
+                    <div class="ans-container-header">
+                        <h2>All Answers</h2>
+                        <div class="sort-ans">
+                            <form action="/sort-answer/" method="post" class="sort-ans-form" id="sort-ans-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="query-slug" value="{{query.query_slug}}">
+                                <div class="form-group">
+                                    <label for="sortby">Sort by: </label>
+                                    <select name="sortby" id="sortby">
+                                        <option value="date">Recent</option>
+                                        <option value="likes">Likes</option>
+                                    </select>
+                                </div>
+                                {% if answers %}
+                                <button class="sort-ans-btn" type="submit">Sort</button>
+                                {% else %}
+                                <button class="btn btn-primary sort-ans-btn" type="button" disabled>Sort</button>
+                                {% endif %}
+                                
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Answer card  -->
+                    {% if answers %}
+                    {% for answer, total_likes, is_liked in ans_like_count %}
+                    <div class="answers-details-card">
+                        <div class="card-top">
+                            <div>
+                                <span>{{answer.created_at}}</span>
+                                <span>Likes {{total_likes}}</span>
+                            </div>
+                            <span>Answered by : {{answer.user.first_name}} {{answer.user.last_name}}</span>
+                        </div>
+                        <div class="card-middle">
+                            <span class="ans-desc">{{answer.ans_desc | safe}}</d>
+                        </div>
+                        <div class="card-bottom">
+                            <form action="/ans-like/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="ans-id" value="{{answer.ans_id}}">
+
+                                {% if user.is_authenticated %}
+                                <button type="submit" class="btn btn-sm bg-white ans-like-btn"><i class="fa fa-thumbs-up like-icon {% if is_liked %}text-primary{% endif %} "></i></button>
+                                {% else %}
+                                <button type="submit" class="btn btn-sm bg-white ans-like-btn" disabled><i class="fa fa-thumbs-up like-icon"></i></button>
+                                {% endif %}
+
+                            </form>
+                            <!-- <a href="#" class="ans-like-btn">Like</a> -->
+                            {% if request.user.id == answer.user.id %}
+                            <div>
+                                <a href="/edit-answer/{{answer.ans_id}}/" class="btn btn-sm bg-success-light mr-2">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="/delete-answer/{{answer.ans_id}}/" class="btn btn-sm bg-danger text-white">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+
+                    {% else %}
+                    <div class="no-data">
+                    <h4 class="text-center alert alert-warning">No Answers</h4>
+                    <a href="#add-ans-section" class="btn btn-primary">Add Your Answer</a>
+                    </div>
+                    {% endif %}
+
+                   
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 ans-right">
+            <a href="#add-ans-section" class="btn btn-primary add-ans-btn">Add Your Answer</a>
+            <div class="total-ques-card">
+                Questions<span>{{total_queries}}</span>
+
+            </div>
+            <div class="total-ans-card">
+                Answers<span>{{total_answers}}</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid add-answer" id="add-ans-section">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 py-4">
+            <div class="card p-5 bg-light shadow">
+                <h4 class="alert bg-white text-primary text-center">Add Answer</h4>
+                <form action="/add-answer/{{query.query_slug}}/" method="post" class="add-ans-form">
+                    {% csrf_token %}
+                    {{ansForm.media}}
+                    {{ansForm.as_p}}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block customscript %}
+<script src="{% static '/js/countQueryViews.js' %}"></script>
+{% endblock customscript %}

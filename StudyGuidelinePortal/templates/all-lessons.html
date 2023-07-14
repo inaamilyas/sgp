@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}CoursesName | Study Guideline Portal{% endblock title %}
+
+{% block content %}
+{% load static %}
+
+
+<div class="container-fluid">
+
+    <!-- Content and Sidebar -->
+    <div class="row">
+        <div class="col-md-3 p-0">
+            <button class="menu-btn-lessons" id="side-menu-btn">Menu</button>
+            <div class="lessons" id="lesson-sidebar">
+                <ul class="lessons-list">
+                    <li class="lesson-item subject-name">
+                        <h2>{{lesson_details.course.course_name}}</h2>
+                    </li>
+                    {% for lesson in course_lessons %}
+                    <li class="lesson-item {% if lesson.lesson_slug == lesson_slug %}lesson-item-active{% endif %} "><a
+                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"
+                            class="lesson-link">{{lesson.lesson_title}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+        </div>
+        <div class="col-md-9 col-sm-12">
+            <div class="content-container">
+                <div class="lesson-banner">
+                    <h1>{{lesson_details.lesson_title}}</h1>
+                    <div>
+                        <span>{{lesson_details.time}}</span>
+                        <span id="lesson_details_slug" class="no-visibility">{{lesson_details.lesson_slug}}</span>
+                        <span>Subject :{{lesson_details.course.course_name}}</span>
+                        <span>Ratings {{lesson_ratings}} ({{review_count}})</span>
+                        <span><i class="fa-regular fa-eye"></i><span id="lesson-views-span">{{lesson_details.views}}</span></span>
+                    </div>
+                </div>
+                <span class="lesson-desc">{{lesson_details.lesson_desc | safe}}</span>
+
+                <!-- Ratings  -->
+                <div class="give-ratings">
+                    <form action="/reviews" method="get">
+                        <input type="hidden" name="lesson_id" id="lesson_id" value="{{lesson_details.lesson_id}}">
+                        <fieldset class="rating-wrapper">
+
+                            <input type="radio" name="rate" id="star-5" value="5" required {% if user_rating == 5 %}
+                                checked {% endif %}>
+                            <label for="star-5" class="fas fa-star"></label>
+
+                            <input type="radio" name="rate" id="star-4" value="4" required {% if user_rating == 4 %}
+                                checked {% endif %}>
+                            <label for="star-4" class="fas fa-star"></label>
+
+                            <input type="radio" name="rate" id="star-3" value="3" required {% if user_rating == 3 %}
+                                checked {% endif %}>
+                            <label for="star-3" class="fas fa-star"></label>
+
+                            <input type="radio" name="rate" id="star-2" value="2" required {% if user_rating == 2 %}
+                                checked {% endif %}>
+                            <label for="star-2" class="fas fa-star"></label>
+
+                            <input type="radio" name="rate" id="star-1" value="1" required {% if user_rating == 1 %}
+                                checked {% endif %}>
+                            <label for="star-1" class="fas fa-star"></label>
+
+                        </fieldset>
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-primary rating-btn" type="submit">Rate</button>
+                        {% else %}
+                        <button class="btn btn-primary rating-btn" type="button" disabled>Rate</button>
+                        <span>Login to give ratings <a class="btn btn-primary" href="/login">Login</a></span>
+                        {% endif %}
+                    </form>
+
+                    <a href="/queries" class="btn btn-primary ask-question-btn">Ask any Question!</a>
+                </div>
+
+                <div class="lesson-btns">
+                    <!-- if There is no previous lesson then disable the previous button -->
+                    {% if prev_lesson == None %}
+                    <a href="#" class="btn btn-primary disabled">Previous</a>
+
+                    {% else %}
+                    <a href="/{{prev_lesson.course.course_slug}}/{{prev_lesson.lesson_slug}}"
+                        class="btn btn-primary ">Previous</a>
+                    {% endif %}
+
+
+                    <!-- if There is no next lesson then disable the next button -->
+                    {% if next_lesson == None %}
+                    <a href="#" class="btn btn-primary disabled">Next</a>
+
+                    {% else %}
+                    <a href="/{{next_lesson.course.course_slug}}/{{next_lesson.lesson_slug}}"
+                        class="btn btn-primary ">Next</a>
+                    {% endif %}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <!-- Similar lessons  -->
+    <section class="container recomm-lessons py-3">
+        <h2 class="section-heading">Similar Lessons</h2>
+        <div class="row">
+            <div class="col-12 m-auto">
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
+
+                    <!-- Carousel Items  -->
+                    {% for lesson, avg_rating in similar_lessons_details %}
+                    <div class="item mb-4">
+                        <div class="card lesson-card shadow">
+                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span>
+
+                            <div class="lesson-meta">
+                                <p>{{lesson.course.course_name}}</p>
+
+                                <div>
+                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+
+                                    <span style="text-align: center;"><a class="view-lesson"
+                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Links Section  -->
+<hr>
+<section class="container-fluid links-section">
+    <div class="row">
+
+        <div class="col-md-3 lastest-lessons-sidebar">
+            <h3 class="text-center p-2">Latest Lessons</h3>
+            <ul class="latest-lessons">
+                {% for lesson in latest_lessons_details %}
+                <li class="lesson-item">
+                    <h5><a href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">{{lesson.lesson_title}}</a></h5>
+                    <span class="lines-2 lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+
+        <div class="col-md-9 links-container px-5">
+            <h2 class="mb-4 text-center">Want to read more! <span class="blue text-primary">Check out these useful
+                    links</span>
+            </h2>
+            <div class="row">
+                <!-- Link card  -->
+                {% for link, web_name in website_info %}
+                <div class="col-md-10 mb-3">
+                    <div class="card-body link-card">
+                        <h5 class="card-title link-title"><a href="{{link.link_url}}" target="_blank">{{link.link_title}}</a>
+                        </h5>
+                        <div class="link-info">
+                            <span class="btn btn-light">www.{{web_name}}.com</span>
+                            <span class="btn btn-light">{{link.lesson}}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+    let sideMenuBtn = document.getElementById("side-menu-btn");
+    let lessonSidebar = document.getElementById("lesson-sidebar");
+
+    sideMenuBtn.addEventListener("click", function (e) {
+        if (lessonSidebar.style.display == "block") {
+            lessonSidebar.style.display = "none"
+        } else {
+            lessonSidebar.style.display = "block";
+        }
+    });
+
+
+    span = document.querySelectorAll('.lesson-desc-no-style')
+    span.forEach(element => {
+        paras = element.querySelectorAll('p');
+        paras.forEach(para => {
+            if (para.innerText.length >= 150) {
+                element.innerText = para.innerText;
+            }
+        });
+    });
+
+
+</script>
+{% endblock script %}
+
+{% block customscript %}
+<script src="{% static '/js/countLessonViews.js' %}"></script>
+
+<script>
+    // calc-lesson-watch-time/<slug:lesson_slug>/
+    let userLogged = true;
+    let watch_time = 0; 
+
+    // Timer to count the watchtime
+    setInterval(()=>{
+        watch_time=watch_time+1;
+    }, 1000);
+
+    // Making ajax call to send request to the server 
+    window.addEventListener('beforeunload', ()=>{
+        $.ajax({
+                type: 'GET',
+                url: `/calc-lesson-watch-time/${lesson_details_slug}/${watch_time}/`,
+                success: function (response) {
+                    console.log('success', response);
+                },
+                error: function (error) {
+                    console.log('error', error)
+                },
+            });
+    });
+
+    // setInterval(()=>{
+    //     if (userLogged) {
+    //         watch_time=watch_time+5;
+    //         $.ajax({
+    //             type: 'GET',
+    //             url: `/calc-lesson-watch-time/${lesson_details_slug}/${watch_time}/`,
+    //             success: function (response) {
+    //                 console.log('success', response);
+    //                 console.log('watchTime', watch_time);
+    //                 userLogged=response.userLogged;
+    //             },
+    //             error: function (error) {
+    //                 console.log('error', error)
+    //             },
+    //         });
+    //     } 
+    // }, 5000);
+</script>
+{% endblock customscript %}

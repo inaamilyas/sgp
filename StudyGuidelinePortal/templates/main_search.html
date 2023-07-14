@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Search | Study Guideline Portal{% endblock title %}
+
+{% block content %}
+<!-- search box  -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-8 mb-4">
+            <form action="/search/" method="get">
+                <input type="text" placeholder="Search" name="search-query" class="search-input" required>
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h3>Search results for : {{search_query}}</h3>
+    <!-- Displaying messages if any  -->
+    {% if messages %}
+    <div class="search-messages-container">
+        {% for message in messages %}
+        <div class="alert alert-danger">
+            {{message}}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Lessons -->
+{% if lesson_details %}
+<div class="container-fluid bg-light">
+    <section class="container recomm-lessons py-3">
+        <h2 class="section-heading"><span class="text-primary">Lessons</span></h2>
+
+        <div class="row">
+
+            <div class="col-12 m-auto">
+
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
+
+                    <!-- Carousel Items  -->
+                    {% for lesson, avg_rating in lesson_details %}
+
+                    <div class="item mb-4">
+                        <div class="card lesson-card shadow">
+                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+
+                            <div class="lesson-meta">
+                                <p>{{lesson.course.course_name}}</p>
+
+                                <div>
+                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+
+                                    <span style="text-align: center;"><a class="view-lesson"
+                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endif %}
+<!-- Courses -->
+{% if course_details %}
+<div class="container-fluid bg-white">
+    <section class="container recomm-courses py-5">
+        <h2 class="section-heading"><span class="text-primary">Courses</span></h2>
+        <div class="row">
+            <div class="col-12 m-auto">
+
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
+
+                    <!-- Carousel Items  -->
+                    {% for course, first_lesson, no_of_lessons in course_details %}
+                    <div class="item mb-4">
+                        <div class="card course-card border-0 p-0">
+                            <div class="course-img">
+                                <img src="/media/{{course.course_pic}}" alt="">
+                            </div>
+                            <div class="course-info">
+                                <small class="category">{{course.department.dep_name}}</small>
+                                <h4>{{course.course_name}}</h4>
+                                <div class="course-meta">
+                                    <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
+                                    {% if first_lesson %}
+                                    <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="#" class="course-link"><i class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    </a>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+</div>
+{% endif %}
+
+
+
+{% endblock content %}
+
+
+{% block script %}
+<script>
+    span = document.querySelectorAll('.lesson-desc-no-style')
+    span.forEach(element => {
+        paras = element.querySelectorAll('p');
+        paras.forEach(para => {
+            if (para.innerText.length >= 150) {
+                element.innerText = para.innerText;
+            }
+        });
+    });
+
+</script>
+{% endblock script %}

@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}
+Profile | SGP
+{% endblock title %}
+
+{% block content %}
+
+<!-- Profile top  -->
+<section class="container-fluid user-info">
+    <div class="row">
+        <div class="col-md-3 info-left">
+            <div class="info">
+                <img src="/media/{{profile_pic}}" alt="" width="100">
+                <hr>
+                <p class="name">{{user.first_name}} {{user.last_name}}</p>
+                <p>Username : <span>{{user.username}}</span></p>
+                <p>Email : <span>{{user.email}}</span></p>
+                <p></p>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="update-info">
+                <h1>Update Your Information</h1>
+                <form class="update-info-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="fname">First Name</label>
+                            <input type="text" class="form-control" id="fname" name="fname" placeholder="First name"
+                                value="{{user.first_name}}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="lname">Last Name</label>
+                            <input type="text" class="form-control" id="lname" name="lname" placeholder="Last name"
+                                value="{{user.last_name}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" readonly disabled class="form-control" id="email" name="password"
+                            value="{{user.email}}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile-pic">Update Profile Image</label>
+                        <input type="file" class="form-control" id="profile-pic" name="profile-pic" onchange="getImagePreview(event)">
+                    </div>
+                    <div id="preview-div" class="form-group d-none">
+                        <label for="profile-pic">Profile Image Preview : </label>
+                        
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<hr>
+<!-- User Activities  -->
+
+<section class="container user-activities">
+    <!-- Questions -->
+    <div class="row questions">
+        <div class="col-12">
+            <h2>Your Recent Questions</h2>
+            <div class="question-card">
+                <h5 class="ques-title"><a href="#">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error,
+                        vel.</a></h5>
+                <div>
+                    <div>
+                        <span>answers 12</span>
+                        <span>Views 12</span>
+                    </div>
+
+                    <span>Date</span>
+                </div>
+            </div>
+            <div class="question-card">
+                <h5 class="ques-title"><a href="#">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error,
+                        vel.</a></h5>
+                <div>
+                    <div>
+                        <span>answers 12</span>
+                        <span>Views 12</span>
+                    </div>
+
+                    <span>Date</span>
+                </div>
+            </div>
+            <div class="question-card">
+                <h5 class="ques-title"><a href="#">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error,
+                        vel.</a></h5>
+                <div>
+                    <div>
+                        <span>answers 12</span>
+                        <span>Views 12</span>
+                    </div>
+
+                    <span>Date</span>
+                </div>
+            </div>
+            <div class="question-card">
+                <h5 class="ques-title"><a href="#">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error,
+                        vel.</a></h5>
+                <div>
+                    <div>
+                        <span>answers 12</span>
+                        <span>Views 12</span>
+                    </div>
+
+                    <span>Date</span>
+                </div>
+            </div>
+            <div class="question-card">
+                <h5 class="ques-title"><a href="#">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error,
+                        vel.</a></h5>
+                <div>
+                    <div>
+                        <span>answers 12</span>
+                        <span>Views 12</span>
+                    </div>
+
+                    <span>Date</span>
+                </div>
+            </div>
+            <div class="question-card">
+                <h5 class="ques-title"><a href="#">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error,
+                        vel.</a></h5>
+                <div>
+                    <div>
+                        <span>answers 12</span>
+                        <span>Views 12</span>
+                    </div>
+
+                    <span>Date</span>
+                </div>
+            </div>
+
+
+            <a href="#" class="btn btn-primary">Ask Question</a>
+        </div>
+    </div>
+
+    <!-- Answers -->
+    <div class="row answers">
+        <div class="col-12">
+            <h2>Your Recent Answers</h2>
+            <div class="answer-card">
+                <span class="ans-desc">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error, vel. Lorem
+                    ipsum
+                    dolor sit amet consectetur adipisicing elit. Vero reprehenderit nihil iste ipsa architecto
+                    itaqueoris pariatur veritatis consequuntur impedit provident, quidem quaerat ducimus dolores
+                    nostrum? Minus, inventore! Id accusantium maxime porro.</span>
+                <div>
+                    <span>Likes 12</span>
+                    <span>Date</span>
+                </div>
+                <small><a href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem deleniti
+                        quisquam
+                        unde!
+                    </a></small>
+            </div>
+            <div class="answer-card">
+                <span class="ans-desc">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error, vel. Lorem
+                    ipsum
+                    dolor sit amet consectetur adipisicing elit. Vero reprehenderit nihil iste ipsa architecto
+                    itaque
+                    non, iusto magni? Delectus in ducimus nesciunt omnis!</span>
+                <div>
+                    <span>Likes 12</span>
+                    <span>Date</span>
+                </div>
+                <small><a href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem deleniti
+                        quisquam
+                        unde!
+                    </a></small>
+            </div>
+        </div>
+    </div>
+
+    <!--
+    <div class="row your-ratings">
+        <h2>Your Ratings</h2>
+        <div class="ratings-card">
+            <span class="lesson-name"><a href="#"> Lorem ipsum dolor sit amet.</a></span>
+            <span class="rate-val">4 Star</span>
+        </div>
+        <hr>
+        <div class="ratings-card">
+            <span class="lesson-name"><a href="#"> Lorem ipsum dolor sit amet.</a></span>
+            <span class="rate-val">4 Star</span>
+        </div>
+        <hr>
+        <div class="ratings-card">
+            <span class="lesson-name"><a href="#"> Lorem ipsum dolor sit amet.</a></span>
+            <span class="rate-val">4 Star</span>
+        </div>
+        <hr>
+        <div class="ratings-card">
+            <span class="lesson-name"><a href="#"> Lorem ipsum dolor sit amet.</a></span>
+            <span class="rate-val">4 Star</span>
+        </div>
+        <hr>
+    </div>
+-->
+</section>
+
+{% endblock content %}
+
+{% block customscript %}
+<!-- Script for Image Preview  -->
+<script>
+    function getImagePreview(event){
+        // Get the selected file and make local url for it 
+        let image = URL.createObjectURL(event.target.files[0]);
+        let imagePreviewDiv = document.getElementById("preview-div");
+        // Create a new img tag and append it into preview div
+        let newImage = document.createElement('img');
+        newImage.src=image;
+        imagePreviewDiv.className = 'form-group';
+        imagePreviewDiv.appendChild(newImage)
+    }
+</script>
+{% endblock customscript %}

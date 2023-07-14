@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Courses | Study Guideline Portal{% endblock title %}
+
+{% block content %}
+{% load static %}
+<div class="courses-header container-fluid">
+    <h1>Courses</h1>
+</div>
+<div class="container-fluid">
+    <section class="container all-courses py-5">
+        <!-- <h2 class="section-heading">All Courses</h2> -->
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-8 mb-4">
+                <form action="/search-course" method="get">
+                    <input type="text" placeholder="Search Courses" name="search-query" class="search-input" required>
+                    <button type="submit" class="search-btn">Search</button>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <!-- <div class="col-md-3 m-0">
+                <div class="course-categories">
+                    <p>Popular Courses</p>
+                    <ul class="course-list">
+                        {% for course, first_lesson in popu_courses %}
+                        <li class="course-item"><a
+                                href="/{{course.course_slug}}/{{first_lesson}}">{{course.course_name}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div> -->
+
+            <div class="col-md-12 px-5">
+                <h2 class="course-heading">All Featured Courses</h2>
+                <div class="row">
+
+                    <!-- Course Card  -->
+                    {% for course, first_lesson, no_of_lessons in course_details %}
+                    <div class="col-sm-6 col-md-4 col-xl-3 mb-3">
+                        <div class="card course-card border-0 p-0 shadow">
+                            <div class="course-img">
+                                <img src="/media/{{course.course_pic}}" alt="">
+                                <!-- <img src="/static/images/course/coursecard.PNG" alt=""> -->
+                            </div>
+                            <div class="course-info">
+                                <small class="category">{{course.department.dep_name}}</small>
+                                <h4>{{course.course_name}}</h4>
+                                <div class="course-meta">
+                                    <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
+                                    <!-- <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    </a> -->
+                                    {% if first_lesson %}
+                                    <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    </a>
+                                    {% else %}
+                                    <button disabled class="course-link"><i class="fa-sharp fa-solid fa-arrow-right text-center"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock content %}

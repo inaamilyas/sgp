@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title> {% block title %}{% endblock title %} </title>
+
+    <link rel="stylesheet" href="{% static '/plugins/bootstrap/css/bootstrap.min.css' %}">
+    <!-- <link rel="stylesheet" href="{% static '/fontawesome/css/fontawesome.min.css' %}"> -->
+
+    <link href="{% static '/fontawesome/css/all.css' %} " rel="stylesheet">
+    <link rel="stylesheet" href="{% static '/css/style1.css' %}">
+
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <a href="/admin1" class="logo">
+                    <h3 class="text-center">Study Guideline Portal</h3>
+                </a>
+            </div>
+
+            <div class="top-nav-search">
+                <form method="get" action="{% url 'HandleMainSearch' %}">
+                    <input type="text" class="form-control" name="search-query" placeholder="Search here" required>
+                    <select name="search-for" id="search-for">
+                        <option value="all">All</option>
+                        <option value="department">Department</option>
+                        <option value="course">Course</option>
+                        <option value="lesson">Lesson</option>
+                        <option value="query">Query</option>
+                        <option value="answer">Answer</option>
+                    </select>
+                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+
+            <!-- Profile Image and drop down  -->
+            <ul class="nav user-menu">
+                <li class="nav-item dropdown has-arrow">
+                    <div class="dropdown">
+                        <img class="admin-profile-img" src="{{user.profile.profile_pic.url}}" alt=""
+                            class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-item"><a class="" href="#"><span>Profile</span> <i
+                                        class="fas fa-user"></i></a></li>
+                            <li class="dropdown-item"><button type="button" class="btn login-btn" data-bs-toggle="modal"
+                                    data-bs-target="#logoutModal"><span>Logout</span><i
+                                        class="fa fa-sign-out-alt"></i></button></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+
+        <!-- Sidebar Menu  -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">
+                            <span>Main Menu</span>
+                        </li>
+                        <li class="submenu active">
+                            <a href="{% url 'Dashboard' %}"><i class="fas fa-user-graduate"></i> <span> Dashboard</span>
+                                <span class="menu-arrow"></span></a>
+
+                        </li>
+
+                        <li class="submenu">
+                            <a href="{% url 'Users' %}"><i class="fas fa-users"></i> <span>Users</span> <span
+                                    class="menu-arrow"></span></a>
+                        </li>
+
+                        <li class="submenu">
+                            <a href="{% url 'Departments' %}"><i class="fa fa-building" ></i> <span>Departments</span>
+                                <span class="menu-arrow"></span></a>
+                        </li>
+                        <li class="submenu">
+                            <a href="{% url 'Courses' %}"><i class="fa fa-book"></i> <span>Courses</span> <span
+                                    class="menu-arrow"></span></a>
+                        </li>
+                        <li class="submenu">
+                            <a href="{% url 'Lessons' %}"><i class="fa fa-file-text"></i> <span>Lessons</span> <span
+                                    class="menu-arrow"></span></a>
+                        </li>
+
+                        <li class="submenu">
+                            <a href="{% url 'Queries' %}"><i class="fa fa-file-text"></i> <span>Queries</span> <span
+                                    class="menu-arrow"></span></a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa fa-sign-out-alt"></i>&nbsp; &nbsp;
+                        Logout</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <span class="text-danger"> <i class="fa fa-sign-out-alt fa-3x mt-4"></i></span>
+                    <div class="mt-4" style="height: 50px; font-weight: bold;">Are you sure you want to logout?</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <a class="btn btn-outline-danger btn-sm " href="{% url 'AdminLogout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {% block content %}
+
+        {% endblock content %}
+
+
+    </div>
+    <script src="{% static '/jQuery/jQuery.min.js' %}"></script>
+    <script src="{% static '/bootstrap/js/bootstrap.bundle.js' %} "></script>
+    <!-- <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script> -->
+    <!-- <script src="assets/js/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script> -->
+
+    {% block script %}
+
+    {% endblock script %}
+</body>
+
+</html>

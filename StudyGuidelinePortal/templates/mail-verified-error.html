@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email First</title>
+
+    <!-- StyleSheets -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href=" {% static '/bootstrap/css/bootstrap.css' %} ">
+
+    <!-- Font Awesome-->
+    <link href="{% static '/fontawesome/css/all.css' %} " rel="stylesheet">
+
+    <!-- Custom StyleSheet  -->
+    <link rel="stylesheet" href="{% static '/css/style.css' %} ">
+</head>
+
+<body>
+    <section class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+               <h1 class="text-center">Oh no! Your mail didn't verify</h1>
+              
+               <div class="col-12 login-right">
+                <div class="right-content">
+                    <form action="" method="post" class="login-form">
+                        {% csrf_token %}
+                        <h3 class="form-heading">Login Form</h3>
+                        <div class="form-group my-3">
+                            <label for="username" class="label">Email</label>
+                            <input type="email" class="form-control form-input" id="email" name="email"
+                                placeholder="Enter email">
+                        </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary login-btn">Send Mail</button>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>

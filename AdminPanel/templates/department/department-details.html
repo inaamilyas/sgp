@@ -1,0 +1,67 @@
+{% extends "adminbase.html" %}
+
+{% block title %}
+{{lesson.lesson_title}} | SGP
+{% endblock title %}
+
+{% load static %}
+{% block content %}
+
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Department Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'Dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'Departments' %}">Departments</a></li>
+                        <li class="breadcrumb-item active">Department Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-info">
+                            <div class="media mt-3">
+                                <div class="media-body">
+                                    <ul>
+                                        <li>
+                                            <h1 class="info-span">{{department.dep_name}}</h1>
+                                        </li>
+
+                                        <hr>
+                                        <li>
+                                            <span class="title-span">ID :</span>
+                                            <span class="info-span">{{department.dep_id}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Name :</span>
+                                            <span class="info-span">{{department.dep_name}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Slug :</span>
+                                            <span class="info-span">{{department.dep_slug}}</span>
+                                        </li>
+                                        
+
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

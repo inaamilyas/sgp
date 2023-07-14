@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Update Answer | Study Guideline Portal{% endblock title %}
+
+{% block content %}
+{% load static %}
+
+<!-- Answer Form  -->
+<section class="container-fluid bg-light add-ques-section p-5">
+    <div class="row p-2">
+        <div class="col-md-8 bg-white p-5">
+            <h1 class="text-center alert alert-success text-black">Update Answer</h1>
+            <form method="post" class="add-ans-form">
+                {% csrf_token %}
+                {{ansForm.media}}
+                {{ansForm.as_p}}
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

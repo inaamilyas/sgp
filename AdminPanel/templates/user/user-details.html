@@ -1,0 +1,102 @@
+{% extends "adminbase.html" %}
+
+{% block title %}
+{{user.first_name}} {{user.last_name}} | SGP
+{% endblock title %}
+
+{% load static %}
+{% block content %}
+
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">User Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/admin1/users/">Users</a></li>
+                        <li class="breadcrumb-item active">User Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-info">
+                            <h4>About {{user.first_name}}</h4>
+                            <div class="media mt-3">
+                                <img src="/media/{{user.profile.profile_pic}}" class="mr-3" alt="...">
+                                <div class="media-body">
+                                    <ul>
+                                        <li>
+                                            <span class="title-span">Full Name : </span>
+                                            <span class="info-span">{{user.first_name}} {{user.last_name}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Username : </span>
+                                            <span class="info-span">{{user.username}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Email : </span>
+                                            <span class="info-span">{{user.email}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Created At : </span>
+                                            <span class="info-span">{{user.date_joined}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Created At : </span>
+                                            <span class="info-span">{{user.password}}</span>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% comment %} <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div class="skill-info">
+                            <h4>Settings</h4>
+                            <form>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="form-group">
+                                            <label>Username</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="form-group">
+                                            <label>Current Password</label>
+                                            <input type="password" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="form-group">
+                                            <label>New Password</label>
+                                            <input type="password" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
