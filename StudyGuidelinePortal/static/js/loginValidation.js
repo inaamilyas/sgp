@@ -7,7 +7,7 @@ let ValidPass = false;
 
 // Username Validation 
 username.addEventListener('input', (e) => {
-    usernameVal = username.value.trim()
+    let usernameVal = username.value.trim()
     if (usernameVal === "") {
         setErrorMsg(username, 'Username cannot be blank');
         validUsername = false;
@@ -26,7 +26,7 @@ username.addEventListener('input', (e) => {
 
 // Password Validation 
 password.addEventListener('input', (e) => {
-    passwordVal = password.value.trim();
+    let passwordVal = password.value.trim();
     if (passwordVal === "") {
         setErrorMsg(password, 'Password cannot be blank');
         ValidPass = false;

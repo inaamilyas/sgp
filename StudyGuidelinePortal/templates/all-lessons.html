@@ -72,11 +72,11 @@
                         <button class="btn btn-primary rating-btn" type="submit">Rate</button>
                         {% else %}
                         <button class="btn btn-primary rating-btn" type="button" disabled>Rate</button>
-                        <span>Login to give ratings <a class="btn btn-primary" href="/login">Login</a></span>
+                        <span class="login-overlay"><a class="btn btn-primary" href="/login/?next=/{{lesson_details.course.course_slug}}/{{lesson_details.lesson_slug}}">Login</a> to give ratings</span>
                         {% endif %}
                     </form>
 
-                    <a href="/queries" class="btn btn-primary ask-question-btn">Ask any Question!</a>
+                    <a href="/queries" class="btn btn-primary ask-question-btn">Have a Question?</a>
                 </div>
 
                 <div class="lesson-btns">
@@ -156,7 +156,7 @@
                 {% for lesson in latest_lessons_details %}
                 <li class="lesson-item">
                     <h5><a href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">{{lesson.lesson_title}}</a></h5>
-                    <span class="lines-2 lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span>
+                    <!-- <span class="lines-2 lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span> -->
                 </li>
                 {% endfor %}
 
@@ -176,7 +176,7 @@
                         </h5>
                         <div class="link-info">
                             <span class="btn btn-light">www.{{web_name}}.com</span>
-                            <span class="btn btn-light">{{link.lesson}}</span>
+                            <span class="btn btn-light">{{link.lesson.lesson_title}}</span>
                         </div>
                     </div>
                 </div>

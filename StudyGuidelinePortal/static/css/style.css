@@ -340,6 +340,7 @@ footer {
     background-image: linear-gradient(rgba(4, 9, 30, 0.7), rgba(4, 9, 30, 0.7)), url("../images/1.jpg");
     background-position: center;
     background-size: cover;
+    background-attachment: fixed;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -631,6 +632,17 @@ li.lesson-item a:hover {
 .rating-btn {
     margin-left: 10px;
 }
+.login-overlay{
+   position: absolute;
+    width: fit-content;
+    background: #00000082;
+    padding: 5px 20px;
+    margin-left: -1px;
+    color: white;
+    border-radius: 5px;
+    text-align: center; 
+}
+
 
 .lesson-btns {
     width: 100%;

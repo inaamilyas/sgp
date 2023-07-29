@@ -153,7 +153,16 @@
                     {% csrf_token %}
                     {{ansForm.media}}
                     {{ansForm.as_p}}
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    
+                    {% if user.is_authenticated %}
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    {% else %}
+                        <div style="position: relative;">
+                            <button type="button" class="btn btn-primary" disabled>Submit</button>
+                            <span class="login-overlay" style="    left: 0px; top: -5px; "><a class="btn btn-primary" href="/login/?next=/query/{{query.query_slug}}/">Login</a> to answer</span>
+                        </div>
+                    {% endif %}
+                    
                 </form>
             </div>
         </div>

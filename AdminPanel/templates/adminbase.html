@@ -72,32 +72,37 @@
                         <li class="menu-title">
                             <span>Main Menu</span>
                         </li>
-                        <li class="submenu active">
+                        <li class="submenu  {% if dashboard_is_active %} active {% endif %}">
                             <a href="{% url 'Dashboard' %}"><i class="fas fa-user-graduate"></i> <span> Dashboard</span>
                                 <span class="menu-arrow"></span></a>
 
                         </li>
 
-                        <li class="submenu">
+                        <li class="submenu {% if user_is_active %} active {% endif %}">
                             <a href="{% url 'Users' %}"><i class="fas fa-users"></i> <span>Users</span> <span
                                     class="menu-arrow"></span></a>
                         </li>
 
-                        <li class="submenu">
+                        <li class="submenu  {% if department_is_active %} active {% endif %}">
                             <a href="{% url 'Departments' %}"><i class="fa fa-building" ></i> <span>Departments</span>
                                 <span class="menu-arrow"></span></a>
                         </li>
-                        <li class="submenu">
+                        <li class="submenu  {% if course_is_active %} active {% endif %}">
                             <a href="{% url 'Courses' %}"><i class="fa fa-book"></i> <span>Courses</span> <span
                                     class="menu-arrow"></span></a>
                         </li>
-                        <li class="submenu">
+                        <li class="submenu {% if lesson_is_active %} active {% endif %}">
                             <a href="{% url 'Lessons' %}"><i class="fa fa-file-text"></i> <span>Lessons</span> <span
                                     class="menu-arrow"></span></a>
                         </li>
 
-                        <li class="submenu">
+                        <li class="submenu {% if queries_is_active %} active {% endif %}">
                             <a href="{% url 'Queries' %}"><i class="fa fa-file-text"></i> <span>Queries</span> <span
+                                    class="menu-arrow"></span></a>
+                        </li>
+
+                        <li class="submenu {% if link_is_active %} active {% endif %}">
+                            <a href="{% url 'SimilarLinks' %}"><i class="fa fa-file-text"></i> <span>Links</span> <span
                                     class="menu-arrow"></span></a>
                         </li>
 

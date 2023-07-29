@@ -65,6 +65,8 @@
                             <a href="{% url 'ForgetPassword' %}" class="btn forget-btn">Forget Password?</a>
 
                         </div>
+
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
                         <button type="submit" disabled class="btn btn-primary login-btn"  id="login-btn">Login</button>
                     </form>
                     <div class="or">

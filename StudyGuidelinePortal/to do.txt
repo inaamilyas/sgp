@@ -1,20 +1,7 @@
 icons 
-username
-password
-login 
-signup
-email
-arrow icon ->
-social icons
-about 
-contact 
-privacy
-terms of condition
 search
-prev nxt 
-like btn
-user icon
-read more 
+arrow
+
 
 Work
 sorting nested list in python (done)
@@ -39,14 +26,29 @@ lesson watch time using ajax(done)
 resend email (done)
 error at view question without login (done)
 how to change password in django (done)
+Integrating recomm system (done)
+cannot pick uploaded pkl files (done)
+Login to give rating styling (done)
+login to add answers (half done)
+
 confirm delete page
 check type of message in template 
 time formatting of lessons 
+add update form authentications
+Profile page working
+
+
+Adding some features using ajax 
+sorting based on time and likes 
+like and unlike
+ratings 
+
+lesson-menu styling
+
+
 back button
 how to add image field in django form 
 how to send context data with redirect
-Login to give rating styling
-login to add answer
 how to stop setInternal function in js
 run a function only when the screen is in focus in js 
 
@@ -80,3 +82,6 @@ icons
 
 Course Link
 http://ccw.vcomsats.edu.pk/Home/ListContent?search=&disciplineId=1&typeId=1
+
+how to reload django server automatically
+why python code not use updated pickle files

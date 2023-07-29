@@ -1,0 +1,76 @@
+{% extends "adminbase.html" %}
+
+{% block title %}
+{{query.query_title}} | SGP
+{% endblock title %}
+
+{% load static %}
+{% block content %}
+
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Query Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/admin1/queries/">Queries</a></li>
+                        <li class="breadcrumb-item active">Query Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-info">
+                            <div class="media mt-3">
+                                <div class="media-body">
+                                    <ul>
+                                        <li>
+                                            <h1 class="info-span">{{query.query_title}}</h1>
+                                        </li>
+                                        <hr>
+                                        <li>
+                                            <span class="info-span">{{query.query_desc | safe}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Course :</span>
+                                            <span class="info-span">{{query.course.course_name }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Asked By :</span>
+                                            <span class="info-span">{{query.user.username }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Views :</span>
+                                            <span class="info-span">{{query.views }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Created At :</span>
+                                            <span class="info-span">{{query.created_at }}</span>
+                                        </li>
+                                    </ul>
+<hr>
+                                    <ul>
+                                        <h2>All Answers</h2>
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

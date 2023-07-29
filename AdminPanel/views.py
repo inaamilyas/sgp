@@ -1,4 +1,6 @@
+from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
+import requests
 from StudyGuidelinePortal.models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -8,44 +10,130 @@ from django.contrib import messages
 # Reload Recommendation System 
 import pandas as pd
 import numpy as np
+import mysql.connector
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import pickle
 
 
-# Converting major into list
-def toList(str):
-    return str.split(',')
 
+def reloadRecommendation():
+    print("inside recommendation model")
+    # Connect to Database 
+    mydb = mysql.connector.connect(
+    host="127.0.0.1",
+    user="root",
+    password="",
+    database="study_guideline_portal",
+    )
+    mycursor=mydb.cursor()
 
-def reloadRecomm():
-    print('inside relaod Recommendation')
-    lessons = pd.read_csv('csv_files/lessons.csv')
-    lessons.isnull().sum()
-    lessons.duplicated().sum()
-    lessons = lessons[['Title', 'course', 'Major']]
-    lessons_orig = lessons.copy()
-    lessons['Major']=lessons['Major'].apply(toList)
-    lessons['Title']=lessons['Title'].apply(lambda x:x.split())
-    # # Removing spaces from Course
-    lessons['course']=lessons['course'].apply(lambda x:x.replace(" ", ""))
-    # Converiting to list.
-    lessons['course']=lessons['course'].apply(toList)
-    lessons['tags']= lessons['Title']+lessons['course']+lessons['Major']
-    
-    new_df = lessons[['Title','tags']]
+    # Fetching data from database
+    mycursor.execute('SELECT studyguidelineportal_lesson.lesson_id, studyguidelineportal_lesson.lesson_title, studyguidelineportal_lesson.lesson_tags, studyguidelineportal_lesson.lesson_summary, studyguidelineportal_course.course_name, studyguidelineportal_department.dep_name FROM ( (studyguidelineportal_lesson left join studyguidelineportal_course on studyguidelineportal_lesson.course_id = studyguidelineportal_course.course_id) left join studyguidelineportal_department on studyguidelineportal_course.department_id = studyguidelineportal_department.dep_id);')
+    data = mycursor.fetchall()
+
+    # Converting data to pandas dataframe
+    lesson_id=[]
+    lesson_title=[]
+    lesson_tags=[]
+    lesson_summary=[]
+    course_name=[]
+    dep_name=[]
+
+    for i in data:
+        lesson_id.append(i[0])
+        lesson_title.append(i[1])
+        lesson_tags.append(i[2])
+        lesson_summary.append(i[3])
+        course_name.append(i[4])
+        dep_name.append(i[5])
+
+    mydict={
+        'lesson_id':lesson_id,
+        'lesson_title':lesson_title,
+        'lesson_tags':lesson_tags,
+        'lesson_summary':lesson_summary,
+        'course_name':course_name,
+        'dep_name':dep_name
+        }
+    lessons = pd.DataFrame(mydict) #creating dataframe throught dictionary
+
+    # Converting to list 
+    lessons['lesson_title'] =lessons['lesson_title'].apply(lambda x:x.split())
+    lessons['lesson_summary'] =lessons['lesson_summary'].apply(lambda x:x.split())
+    lessons['lesson_tags'] =lessons['lesson_tags'].apply(lambda x:x.split(","))
+    lessons['course_name'] = lessons['course_name'].apply(lambda x: x.split(","))
+    lessons['dep_name'] = lessons['dep_name'].apply(lambda x: x.split(","))
+
+    # Removing spaces from course_name and dep_name
+    lessons['dep_name']=lessons['dep_name'].apply(lambda x:[i.replace(" ", "") for i in x])
+    lessons['course_name']=lessons['course_name'].apply(lambda x:[i.replace(" ", "") for i in x])
+
+    # Creating new column 
+    lessons['tags'] = lessons['lesson_title'] + lessons['lesson_tags'] + lessons['lesson_summary'] + lessons['course_name'] + lessons['dep_name']
+    lessons['tags'][0]
+
+    # Creating new dataframe 
+    lessons_tags_df = lessons[['lesson_id','lesson_title','tags']]
+
     # Converting back to String 
-    new_df['tags'] = new_df['tags'].apply(lambda x:" ".join(x))
+    lessons_tags_df['tags'] = lessons_tags_df['tags'].apply(lambda x:" ".join(x))
+    lessons_tags_df['lesson_title'] = lessons_tags_df['lesson_title'].apply(lambda x:" ".join(x))
+
     # Converting to Lowercase
-    new_df['tags'] = new_df['tags'].apply(lambda x:x.lower())
-    new_df['tags']
+    lessons_tags_df['tags'] =lessons_tags_df['tags'].apply(lambda x:x.lower())
+
+    # Creating vectors 
     cv = CountVectorizer(max_features=2000, stop_words='english')
-    vectors = cv.fit_transform(new_df['tags']).toarray()
+    vectors = cv.fit_transform(lessons_tags_df['tags']).toarray()
+    # cv.get_feature_names()
+
+    # calculating similarities 
     similarity=cosine_similarity(vectors)
 
-    print('dumping files')
-    pickle.dump(lessons_orig, open('pkl_files/lessons.pkl', 'wb'))
+    # Dumping files 
+    print("dumpinig files")
+    pickle.dump(lessons_tags_df, open('pkl_files/lessons_tags_df.pkl', 'wb'))
     pickle.dump(similarity, open('pkl_files/similarity.pkl', 'wb'))
+
+
+"""
+# Converting major into list
+# def toList(str):
+#     return str.split(',')
+
+# def reloadRecomm():
+#     print('inside relaod Recommendation')
+#     lessons = pd.read_csv('csv_files/lessons.csv')
+#     lessons.isnull().sum()
+#     lessons.duplicated().sum()
+#     lessons = lessons[['Title', 'course', 'Major']]
+#     lessons_orig = lessons.copy()
+#     lessons['Major']=lessons['Major'].apply(toList)
+#     lessons['Title']=lessons['Title'].apply(lambda x:x.split())
+#     # # Removing spaces from Course
+#     lessons['course']=lessons['course'].apply(lambda x:x.replace(" ", ""))
+#     # Converiting to list.
+#     lessons['course']=lessons['course'].apply(toList)
+#     lessons['tags']= lessons['Title']+lessons['course']+lessons['Major']
+    
+#     new_df = lessons[['Title','tags']]
+#     # Converting back to String 
+#     new_df['tags'] = new_df['tags'].apply(lambda x:" ".join(x))
+#     # Converting to Lowercase
+#     new_df['tags'] = new_df['tags'].apply(lambda x:x.lower())
+#     new_df['tags']
+#     cv = CountVectorizer(max_features=2000, stop_words='english')
+#     vectors = cv.fit_transform(new_df['tags']).toarray()
+#     similarity=cosine_similarity(vectors)
+
+#     print('dumping files')
+#     pickle.dump(lessons_orig, open('pkl_files/lessons.pkl', 'wb'))
+#     pickle.dump(similarity, open('pkl_files/similarity.pkl', 'wb'))
+
+"""
+
+
 
 
 # Create your views here.
@@ -80,10 +168,16 @@ def handleLogout(request):
     logout(request)
     return redirect('AdminLogin')
 
-
+from django.views.decorators.cache import cache_control
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def dashboard(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-       
+        reloadRecommendation()
+        # try:
+        #     fetchLinks("this us")
+        # except:
+        #     print("Something went wrong")
+
         total_course = len(Course.objects.all())
         total_lesson = len(Lesson.objects.all())
         total_questions = len(Query.objects.all())
@@ -99,6 +193,7 @@ def dashboard(request):
             'total_questions': total_questions,
             'total_answers': total_answers,
             'total_lessonReviews': total_lessonReviews,
+            'dashboard_is_active': True,
         }
 
         return render(request, 'dashboard.html', context)
@@ -113,6 +208,7 @@ def users(request):
         users = User.objects.filter(is_staff=False, is_superuser=False)
         context = {
             'users': users,
+            'user_is_active': True,
         }
         return render(request, 'user/users.html', context)
     else:
@@ -125,6 +221,7 @@ def userDetails(request, id):
         user = User.objects.get(id=id)
         context = {
             'user': user,
+            'user_is_active': True,
         }
         return render(request, 'user/user-details.html', context)
     else:
@@ -151,6 +248,7 @@ def updateUser(request, id):
 
         context = {
             'user': user,
+            'user_is_active': True,
         }
         return render(request, 'user/edit-user.html', context)
     else:
@@ -174,6 +272,7 @@ def departments(request):
         departments = Department.objects.all()
         context = {
             'departments': departments,
+            'department_is_active': True,
         }
         return render(request, 'department/departments.html', context)
     else:
@@ -186,6 +285,7 @@ def departmentDetails(request, department_slug):
         department = Department.objects.get(dep_slug=department_slug)
         context = {
             'department': department,
+            'department_is_active': True,
         }
         return render(request, 'department/department-details.html', context)
     else:
@@ -209,6 +309,7 @@ def addDepartment(request):
 
         context = {
             'depForm': depForm,
+            'department_is_active': True,
         }
         return render(request, 'department/add-department.html', context)
     else:
@@ -233,6 +334,7 @@ def updateDepartment(request, department_slug):
         context = {
             'department':department,
             'depForm': depForm,
+            'department_is_active': True,
         }
         return render(request, 'department/edit-department.html', context)
     else:
@@ -256,6 +358,7 @@ def courses(request):
         courses = Course.objects.all()
         context = {
             'courses': courses,
+            'course_is_active': True,
         }
         return render(request, 'course/courses.html', context)
     else:
@@ -270,6 +373,7 @@ def courseDetails(request, course_slug):
         context = {
             'course': course,
             'no_of_lessons': no_of_lessons,
+            'course_is_active': True,
         }
         return render(request, 'course/course-details.html', context)
     else:
@@ -295,6 +399,7 @@ def addCourse(request):
 
         context = {
             'departments': departments,
+            'course_is_active': True,
         }
 
         return render(request, 'course/add-course.html', context)
@@ -325,6 +430,7 @@ def updateCourse(request, course_slug):
         context = {
             'departments': departments,
             'course': course,
+            'course_is_active': True,
         }
 
         return render(request, 'course/edit-course.html', context)
@@ -349,6 +455,7 @@ def lessons(request):
         lessons = Lesson.objects.all()
         context = {
             'lessons': lessons,
+            'lesson_is_active': True,
         }
         return render(request, 'lesson/lessons.html', context)
     else:
@@ -369,6 +476,7 @@ def lessonDetails(request, lesson_slug):
             'lesson': lesson,
             'lesson_ratings': lesson_ratings,
             'no_of_ratings': no_of_ratings,
+            'lesson_is_active': True,
         }
         return render(request, 'lesson/lesson-details.html', context)
     else:
@@ -396,6 +504,7 @@ def updateLesson(request, lesson_slug):
 
         context = {
             'lessonForm': lessonForm,
+            'lesson_is_active': True,
         }
 
         return render(request, 'lesson/edit-lesson.html', context)
@@ -434,6 +543,7 @@ def addLesson(request):
 
         context = {
             'lessonForm': lessonForm,
+            'lesson_is_active': True,
         }
         return render(request, 'lesson/add-lesson.html', context)
     else:
@@ -448,6 +558,7 @@ def queries(request):
         queries = Query.objects.all()
         context = {
             'queries': queries,
+            'queries_is_active': True,
         }
         return render(request, 'queries/queries.html', context)
     else:
@@ -461,6 +572,7 @@ def queryDetails(request, query_slug):
 
         context = {
             'query': query,
+            'queries_is_active': True,
             
         }
         return render(request, 'queries/query-details.html', context)
@@ -493,6 +605,7 @@ def updateQuery(request, query_slug):
 
         context = {
             'queryForm': queryForm,
+            'queries_is_active': True,
         }
 
         return render(request, 'queries/edit-query.html', context)
@@ -531,6 +644,7 @@ def addQuery(request):
 
         context = {
             'queryForm': queryForm,
+            'queries_is_active': True,
         }
         return render(request, 'queries/add-query.html', context)
     else:
@@ -544,8 +658,83 @@ def answers(request):
         answers = Answer.objects.all()
         context = {
             'answers': answers,
+            'answer_is_active': True,
         }
         return render(request, 'answers/answers.html', context)
+    else:
+        messages.error(request, 'Acess denied. Try again')
+        return redirect('AdminLogin')
+
+
+# Similar Links 
+def similarLinks(request):
+    if not request.user.is_anonymous and request.user.is_superuser:
+        links = SimilarLinks.objects.all()
+        context = {
+            'links': links,
+            'link_is_active': True,
+        }
+        return render(request, 'links/links.html', context)
+    else:
+        messages.error(request, 'Acess denied. Try again')
+        return redirect('AdminLogin')
+
+
+def updateLink(request, link_id):
+    if not request.user.is_anonymous and request.user.is_superuser:
+        link = SimilarLinks.objects.get(link_id=link_id)
+        if request.method == 'POST':
+            link_title = request.POST.get('link_title')
+            link_url= request.POST.get('link_url')
+
+            link.link_title = link_title
+            link.link_url = link_url
+            link.save()
+            messages.success(request, "Link updated successfully")
+            return redirect('SimilarLinks')
+
+        context = {
+            'link':link,
+            'queries_is_active': True,
+        }
+
+        return render(request, 'links/edit-link.html', context)
+
+    else:
+        messages.error(request, 'Acess denied. Try again')
+        return redirect('AdminLogin')
+
+
+def deleteLink(request, link_id):
+    if not request.user.is_anonymous and request.user.is_superuser:
+        link = SimilarLinks.objects.get(link_id=link_id)
+        link.delete()
+        return redirect('SimilarLinks')
+    else:
+        messages.error(request, 'Acess denied. Try again')
+        return redirect('AdminLogin')
+
+
+def addLink(request):
+    if not request.user.is_anonymous and request.user.is_superuser:
+        
+        if request.method == 'POST':
+            link_title = request.POST.get('link_title')
+            link_url= request.POST.get('link_url')
+            lesson_slug= request.POST.get('lesson_slug')
+            lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
+
+            SimilarLinks(link_title=link_title, link_url=link_url, lesson=lesson).save()
+            messages.success(request, "Link added successfully")
+            return redirect('SimilarLinks')
+
+        context = {
+            'lesson_list':Lesson.objects.all(),
+            'queries_is_active': True,
+        }
+
+        return render(request, 'links/add-link.html', context)
+
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
@@ -626,3 +815,52 @@ def avgRating(lesson):
     else:
         avg_rating = total_ratings
     return avg_rating
+
+
+# Scraping Links
+def fetchLinks(lesson_title):
+
+    # Making url and search
+    url = 'https://google.com/search?q=' + lesson_title
+    request_result = requests.get(url)
+
+    # Creating soup from the fetched request
+    soup = BeautifulSoup(request_result.text, "html.parser")
+
+    # all major headings of our search result,
+    heading_object = soup.find_all('h3')
+
+    # Links relative to each heading
+    link_object = soup.find_all('h3')
+
+    # Getting href of link
+    rawlinks = []
+    for rawlink in link_object:
+        link = rawlink.previous_element.previous_element.previous_element.get(
+            'href')
+        rawlinks.append(link)
+
+    # Extracting the main url
+    link_object = []
+    for rawlink in rawlinks:
+        if rawlink:
+            link = ''
+            for ch in rawlink:
+                if ch == '&':
+                    break
+                else:
+                    link = link+ch
+            link_object.append(link[7:])
+
+    # Mapping heading with links
+    linksInfo = []
+    for index in range(len(heading_object)):
+        list = []
+        list.append(heading_object[index].getText())
+        list.append(link_object[index])
+
+        linksInfo.append(list)
+
+    return linksInfo
+
+

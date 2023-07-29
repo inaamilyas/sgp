@@ -60,7 +60,7 @@ urlpatterns = [
          deleteQuery, name='deleteQuery'),
 
 
-    # Queries
+    # Answers
 #     path('answers/', answers, name='Answers'),
 #     path('query-details/<slug:query_slug>',
 #          queryDetails, name='QueryDetails'),
@@ -70,6 +70,17 @@ urlpatterns = [
 #          updateQuery, name='UpdateQuery'),
 #     path('delete-query/<slug:query_slug>',
 #          deleteQuery, name='deleteQuery'),
+
+
+    # Answers
+    path('similar-links/', similarLinks, name='SimilarLinks'),
+#     path('query-details/<slug:query_slug>',
+#          queryDetails, name='QueryDetails'),
+    path('add-link/', addLink, name='AddLink'),
+    path('update-link/<int:link_id>',
+         updateLink, name='UpdateLink'),
+    path('delete-link/<int:link_id>',
+         deleteLink, name='DeleteLink'),
 
 
 ]

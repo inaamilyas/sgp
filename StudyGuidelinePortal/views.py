@@ -1,7 +1,7 @@
 
 from django.http import JsonResponse
 import requests
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -12,65 +12,27 @@ from django.contrib import messages
 import uuid
 from django.conf import settings
 from django.core.mail import send_mail
+from django.views.decorators.cache import cache_control
 
-# Similar Lessons Recommendation system
-import pickle
-
-similarity = pickle.load(open('pkl_files/similarity.pkl', 'rb'))
-lessons = pickle.load(open('pkl_files/lessons.pkl', 'rb'))
-
-
-def recommendSimilarLesson(lesson_title):
-    lesson_index = lessons[lessons['Title'] == lesson_title].index[0]
-    distances = similarity[lesson_index]
-    lesson_list = sorted(list(enumerate(distances)),
-                         reverse=True, key=lambda x: x[1])[1:10]
-
-    for i in lesson_list:
-        print(lessons.iloc[i[0]].Title)
+from .recomm2 import LRS
 
 
 # Create your views here.
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home(request):
-    # recommendSimilarLesson('What is Normalization')
-
     rec_courses = Course.objects.all()
     rec_lessons = Lesson.objects.all()
     latest_lessons = Lesson.objects.all().order_by('-time')
 
-    """
-    # Mapping recommended lessons with ratings
-    rec_lesson_details = []
-    for lesson in rec_lessons:
-        avg_rating = avgRating(lesson)
+    # Recommendation code 
+    # rec_obj = LRS()
+    # print(rec_obj.similarity_recomm('What is ethics?'))
+    # print('=======')
+    # print(rec_obj.user_interest_recomm(1))
+    # print('======')
 
-        # Appending to the list
-        rec_lesson_details.append([lesson, avg_rating])
-
-    # Mapping Latest lessons with ratings
-    latest_less_details = []
-    for lesson in latest_lessons:
-        avg_rating = avgRating(lesson)
-
-        # Appending to the list
-        latest_less_details.append([lesson, avg_rating])
-
-    # Recommend courses details
-    rec_course_details = []
-    for course in rec_courses:
-        first_lesson = None
-        # if there is any lesson then get it
-        if (len(Lesson.objects.filter(course=course)) > 0):
-            first_lesson = Lesson.objects.filter(course=course)[0].lesson_slug
-
-        no_of_lessons = len(Lesson.objects.filter(course=course))
-
-        rec_course_details.append([course, first_lesson, no_of_lessons])
-    """
+   
     context = {
-        # 'rec_lesson_details': rec_lesson_details,
-        # 'latest_less_details': latest_less_details,
-        # 'rec_course_details': rec_course_details,
         'rec_lesson_details': map_lesson_details(rec_lessons),
         'latest_less_details': map_lesson_details(latest_lessons),
         'rec_course_details': map_course_details(rec_courses),
@@ -81,18 +43,6 @@ def home(request):
 def courses(request):
     all_courses = Course.objects.all()
 
-    """
-    course_details = []
-    for course in all_courses:
-        first_lesson = None
-        # if there is any lesson then get it
-        no_of_lessons = len(Lesson.objects.filter(
-            course=course))
-        if (no_of_lessons > 0):
-            first_lesson = Lesson.objects.filter(course=course)[0].lesson_slug
-
-        course_details.append([course, first_lesson, no_of_lessons])
-    """
     popu_courses = []
     for course in all_courses:
         first_lesson = None
@@ -105,15 +55,13 @@ def courses(request):
         popu_courses.append([course, first_lesson])
 
     context = {
-        # 'course_details': course_details,
         'course_details': map_course_details(all_courses),
         'popu_courses': popu_courses,
     }
     return render(request, 'courses.html', context)
 
+
 # Count lesson views
-
-
 def countLessonViews(request, lesson_slug):
     lesson_details = Lesson.objects.get(lesson_slug=lesson_slug)
     # Counting views for lesson
@@ -156,13 +104,6 @@ def courseLesson(request, course_name, lesson_name):
     # Similar lessons
     similar_lessons = Lesson.objects.all()
 
-    """
-    similar_lessons_details = []
-    for lesson in similar_lessons:
-        avg_rating = avgRating(lesson)
-        # Appending to the list
-        similar_lessons_details.append([lesson, avg_rating])
-    """
     # Latest lessons (- is used to reverse the order)
     latest_lessons = Lesson.objects.all().order_by('-time')[:6]
 
@@ -188,7 +129,6 @@ def courseLesson(request, course_name, lesson_name):
         'course_lessons': course_lessons,
         'prev_lesson': prev_lesson,
         'next_lesson': next_lesson,
-        # 'similar_lessons_details': similar_lessons_details,
         'similar_lessons_details': map_lesson_details(similar_lessons),
         'latest_lessons_details': latest_lessons,
         'website_info': website_info,
@@ -310,9 +250,8 @@ def queryDetails(request, query_slug):
     }
     return render(request, 'answers.html', context)
 
+
 # Count query views
-
-
 def countQueryViews(request, query_slug):
     query = Query.objects.get(query_slug=query_slug)
     # Counting views for lesson
@@ -704,6 +643,9 @@ def handleLogin(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            next_page = request.GET.get('next')
+            if next_page:
+                return redirect(next_page)
             return redirect('Home')
         else:
             messages.error(request, 'Wrong username or password. Try again')
@@ -800,9 +742,8 @@ def calcLessonWatchTime(request, lesson_slug, watch_time):
 
     return JsonResponse(context)
 
+
 # Handling 404 page error
-
-
 def handle404Error(request, exception):
     return render(request, '404.html')
 
@@ -875,9 +816,8 @@ def avgRating(lesson):
 def sortListDesc(neslist, index):
     return sorted(neslist, key=lambda v: (-v[index]))
 
+
 # Mapping lesson with Ratings
-
-
 def map_lesson_details(lessons):
     lesson_details = []
     for lesson in lessons:
@@ -886,9 +826,8 @@ def map_lesson_details(lessons):
         lesson_details.append([lesson, avg_rating])
     return lesson_details
 
+
 # Mapping course details
-
-
 def map_course_details(courses):
     course_details = []
     for course in courses:

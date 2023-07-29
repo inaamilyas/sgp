@@ -6,19 +6,56 @@
 {% load static %}
 
 <!-- Question Form  -->
-<section class="container-fluid bg-light add-ques-section p-5">
+<section class="container-fluid bg-light add-ques-section p-md-5">
     <div class="row p-2">
-        <div class="col-md-8 bg-white p-5">
+        <div class="col-12 col-md-8 bg-white p-sm-5">
             <h1 class="text-center alert alert-success text-black">Add New Question</h1>
             <form class="ques-form" method="post">
                 {% csrf_token %}
                 {{queryForm.media}}
                 {{queryForm.as_p}}
-                <button type="submit" class="btn btn-primary" id="add-qest-btn">Submit</button>
+                <button type="submit" class="btn btn-primary" id="add-qest-btn" disabled >Submit</button>
             </form>
         </div>
     </div>
-    
+
 </section>
 
 {% endblock content %}
+
+{% block customscript %}
+<script>
+    const query_title_input = document.getElementById("id_query_title");
+    const course_input = document.getElementById("id_course");
+    const add_ques_btn = document.getElementById('add-qest-btn');
+    let valid_course = false;
+    let valid_title = false;
+
+
+    const enable_btn = () => {
+        if (valid_course && valid_title) {
+            add_ques_btn.disabled = false;
+        } else {
+            add_ques_btn.disabled = true;
+        }
+    }
+
+    query_title_input.addEventListener('input', ()=>{
+        if (query_title_input.value.length > 2) {
+            valid_title = true;
+        } else{
+            valid_title=false;
+        }
+        enable_btn(valid_course, valid_title);
+    });
+    course_input.addEventListener('change', ()=>{
+        if (course_input.value !== "") {
+            valid_course=true;
+        } else{
+            valid_course=false;
+        }
+        enable_btn(valid_course, valid_title);   
+    });
+</script>
+
+{% endblock customscript %}
