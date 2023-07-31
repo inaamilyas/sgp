@@ -13,28 +13,42 @@ import uuid
 from django.conf import settings
 from django.core.mail import send_mail
 from django.views.decorators.cache import cache_control
-
-from .recomm2 import LRS
+from .recomm3 import LRS
 
 
 # Create your views here.
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home(request):
-    rec_courses = Course.objects.all()
-    rec_lessons = Lesson.objects.all()
+
+    rec_courses = set()
+    rec_lessons = []
     latest_lessons = Lesson.objects.all().order_by('-time')
 
     # Recommendation code 
-    # rec_obj = LRS()
-    # print(rec_obj.similarity_recomm('What is ethics?'))
-    # print('=======')
-    # print(rec_obj.user_interest_recomm(1))
-    # print('======')
+    rec_obj = LRS()
+    print(rec_obj.popular_recomm())
+    if not request.user.is_anonymous:
+        # make recommendations 
+        for lesson_id in rec_obj.user_interest_recomm(request.user.id):
+            lesson = Lesson.objects.get(lesson_id=lesson_id)
+            if lesson:
+                rec_lessons.append(lesson)
+                rec_courses.add(lesson.course)
+    else:
+        rec_lessons=Lesson.objects.all()
+        rec_courses=Course.objects.all()
 
-   
+    popular_lessons_ids=rec_obj.popular_recomm()
+    popu_lessons = []
+    for lesson_id in popular_lessons_ids:
+            lesson = Lesson.objects.get(lesson_id=lesson_id)
+            if lesson:
+                popu_lessons.append(lesson)
+
     context = {
         'rec_lesson_details': map_lesson_details(rec_lessons),
         'latest_less_details': map_lesson_details(latest_lessons),
+        'popu_lesson_details': map_lesson_details(popu_lessons),
         'rec_course_details': map_course_details(rec_courses),
     }
     return render(request, 'index.html', context)
@@ -102,7 +116,13 @@ def courseLesson(request, course_name, lesson_name):
                 next_lesson = course_lessons[i+1]
 
     # Similar lessons
-    similar_lessons = Lesson.objects.all()
+    similar_lessons = []
+    lrs = LRS()
+    for lesson_id in lrs.similarity_recomm(lesson_details.lesson_id):
+        lesson = Lesson.objects.get(lesson_id=lesson_id)
+        if lesson:
+            similar_lessons.append(lesson)
+
 
     # Latest lessons (- is used to reverse the order)
     latest_lessons = Lesson.objects.all().order_by('-time')[:6]
@@ -734,11 +754,14 @@ def calcLessonWatchTime(request, lesson_slug, watch_time):
                             watch_time=watch_time).save()
             print('no previous watchtime found for this lesson and user')
         context = {
-
+            'success':'success',
         }
         # return JsonResponse(context)
     else:
         print('user is not loggedin')
+        context={
+            'user':'user is not loggedin',
+        }
 
     return JsonResponse(context)
 

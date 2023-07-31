@@ -10,7 +10,8 @@
         <div class="col-6 header-left">
             <div class="header-left-content">
                 <h1>An Investment in <span>Knowledge</span><br>Pays the Best Interest</h1>
-                <p>Embark on a journey of knowledge and growth at Study Guideline Portal. Your one-stop destination for high-quality online courses. Start learning today!
+                <p>Embark on a journey of knowledge and growth at Study Guideline Portal. Your one-stop destination for
+                    high-quality online courses. Start learning today!
                 </p>
                 <a href="/courses" class="btn btn-primary">Checkout Our Courses</a>
 
@@ -38,51 +39,54 @@
 </div>
 
 <!-- Recommended lessons -->
+{% if rec_lesson_details %}
 <div class="container-fluid bg-light">
-<section class="container recomm-lessons py-3">
-    <h2 class="section-heading">Recommended <span class="text-primary">Lessons</span></h2>
+    <section class="container recomm-lessons py-3">
+        <h2 class="section-heading">Recommended <span class="text-primary">Lessons</span></h2>
 
-    <div class="row">
+        <div class="row">
 
-        <div class="col-12 m-auto">
+            <div class="col-12 m-auto">
 
-            <!-- Owl Carousel  -->
-            <div class="owl-carousel owl-theme">
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
 
-                <!-- Carousel Items  -->
-                {% for lesson, avg_rating in rec_lesson_details %}
+                    <!-- Carousel Items  -->
+                    {% for lesson, avg_rating in rec_lesson_details %}
 
-                <div class="item mb-4">
-                    <div class="card lesson-card shadow">
-                        <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
-                        <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+                    <div class="item mb-4">
+                        <div class="card lesson-card shadow">
+                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
 
-                        <div class="lesson-meta">
-                            <p>{{lesson.course.course_name}}</p>
-                            
-                            <div>
-                                <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
-                                <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+                            <div class="lesson-meta">
+                                <p>{{lesson.course.course_name}}</p>
 
-                                <span style="text-align: center;"><a class="view-lesson"
-                                    href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
-                                        class="fa-sharp fa-solid fa-arrow-right"></i></a>
-                            </span>
+                                <div>
+                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+
+                                    <span style="text-align: center;"><a class="view-lesson"
+                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                    </span>
+                                </div>
+
                             </div>
-
                         </div>
                     </div>
+
+                    {% endfor %}
+
                 </div>
-
-                {% endfor %}
-
             </div>
         </div>
-    </div>
-</section>
+    </section>
 </div>
+{% endif %}
 
 <!-- Recommended Courses -->
+{% if rec_course_details %}
 <div class="container-fluid bg-white">
     <section class="container recomm-courses py-5">
         <h2 class="section-heading">Recommended <span class="text-primary">Courses</span></h2>
@@ -128,49 +132,95 @@
 
     </section>
 </div>
+{% endif %}
 
 <!-- Latest lessons -->
 <div class="container-fluid bg-light">
-<section class="container recomm-lessons py-5">
-    <h2 class="section-heading">Latest <span class="text-primary">Lessons</span></h2>
+    <section class="container recomm-lessons py-5">
+        <h2 class="section-heading">Latest <span class="text-primary">Lessons</span></h2>
 
-    <div class="row">
+        <div class="row">
 
-        <div class="col-12 m-auto">
+            <div class="col-12 m-auto">
 
-            <!-- Owl Carousel  -->
-            <div class="owl-carousel owl-theme">
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
 
-                {% for lesson, avg_rating in latest_less_details %}
-                <div class="item mb-4">
-                    <div class="card lesson-card shadow">
-                        <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
-                        <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span>
+                    {% for lesson, avg_rating in latest_less_details %}
+                    <div class="item mb-4">
+                        <div class="card lesson-card shadow">
+                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span>
 
 
-                        <div class="lesson-meta">
-                            <p>{{lesson.course.course_name}}</p>
-                            
-                            <div>
-                                <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
-                                <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+                            <div class="lesson-meta">
+                                <p>{{lesson.course.course_name}}</p>
 
-                                <span style="text-align: center;"><a class="view-lesson"
-                                    href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
-                                        class="fa-sharp fa-solid fa-arrow-right"></i></a>
-                            </span>
+                                <div>
+                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+
+                                    <span style="text-align: center;"><a class="view-lesson"
+                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                    </span>
+                                </div>
+
                             </div>
-
                         </div>
                     </div>
-                </div>
-                {% endfor %}
+                    {% endfor %}
 
+                </div>
             </div>
         </div>
-    </div>
 
-</section>
+    </section>
+</div>
+
+<!-- Popular lessons -->
+<div class="container-fluid bg-light">
+    <section class="container recomm-lessons py-3">
+        <h2 class="section-heading">Popular <span class="text-primary">Lessons</span></h2>
+
+        <div class="row">
+
+            <div class="col-12 m-auto">
+
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
+
+                    <!-- Carousel Items  -->
+                    {% for lesson, avg_rating in popu_lesson_details %}
+
+                    <div class="item mb-4">
+                        <div class="card lesson-card shadow">
+                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+
+                            <div class="lesson-meta">
+                                <p>{{lesson.course.course_name}}</p>
+
+                                <div>
+                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+
+                                    <span style="text-align: center;"><a class="view-lesson"
+                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock content %}
 
