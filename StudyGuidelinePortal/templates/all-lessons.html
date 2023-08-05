@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CoursesName | Study Guideline Portal{% endblock title %}
+{% block title %}{{lesson_details.lesson_title}} | {{lesson_details.course.course_name}}{% endblock title %}
 
 {% block content %}
 {% load static %}
@@ -175,7 +175,7 @@
                         <h5 class="card-title link-title"><a href="{{link.link_url}}" target="_blank">{{link.link_title}}</a>
                         </h5>
                         <div class="link-info">
-                            <span class="btn btn-light">www.{{web_name}}.com</span>
+                            <span class="btn btn-light">{{web_name}}</span>
                             <span class="btn btn-light">{{link.lesson.lesson_title}}</span>
                         </div>
                     </div>

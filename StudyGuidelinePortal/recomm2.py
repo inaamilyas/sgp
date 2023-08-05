@@ -27,16 +27,9 @@ class LRS:
         # Load the file 
         self.load_pkl_file()
 
-        lessons = Lesson.objects.values('lesson_id', 'lesson_title')
-        ratings =LessonReview.objects.values('user', 'lesson', 'rate')
-        watchtime =LessonWatchTime.objects.values('user', 'lesson', 'watch_time')
-
-        # self.lessonsOrig_df = fetch_lessons()
-        # self.ratings_df= fetch_ratings()
-        # self.watchtime_df = fetch_watchtime()
-        self.lessonsOrig_df = pd.DataFrame(list(lessons))
-        self.ratings_df= pd.DataFrame(list(ratings))
-        self.watchtime_df = pd.DataFrame(list(watchtime))
+        self.lessonsOrig_df = self.fetch_lessons()
+        self.ratings_df= self.fetch_ratings()
+        self.watchtime_df = self.fetch_watchtime()
 
 
     def load_pkl_file(self):
@@ -143,10 +136,8 @@ class LRS:
 
             lesson_rated_by_user(loggedin_user, user_history_lessons)
             lesson_watched_by_user(loggedin_user, user_history_lessons)
-            print(user_history_lessons)
             range=2
             if len(user_history_lessons) < 3: range=5
-            # print(f"user history {user_history_lessons}")
             for id in user_history_lessons:
                 for less in self.generate_recomm(id, range):
                     set_lessons.add(less)

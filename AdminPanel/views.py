@@ -6,134 +6,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import *
 from django.contrib import messages
+from .scraper import scraper
+from django.http import JsonResponse
 
-# Reload Recommendation System 
-import pandas as pd
-import numpy as np
-import mysql.connector
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import pickle
-
-
-
-def reloadRecommendation():
-    print("inside recommendation model")
-    # Connect to Database 
-    mydb = mysql.connector.connect(
-    host="127.0.0.1",
-    user="root",
-    password="",
-    database="study_guideline_portal",
-    )
-    mycursor=mydb.cursor()
-
-    # Fetching data from database
-    mycursor.execute('SELECT studyguidelineportal_lesson.lesson_id, studyguidelineportal_lesson.lesson_title, studyguidelineportal_lesson.lesson_tags, studyguidelineportal_lesson.lesson_summary, studyguidelineportal_course.course_name, studyguidelineportal_department.dep_name FROM ( (studyguidelineportal_lesson left join studyguidelineportal_course on studyguidelineportal_lesson.course_id = studyguidelineportal_course.course_id) left join studyguidelineportal_department on studyguidelineportal_course.department_id = studyguidelineportal_department.dep_id);')
-    data = mycursor.fetchall()
-
-    # Converting data to pandas dataframe
-    lesson_id=[]
-    lesson_title=[]
-    lesson_tags=[]
-    lesson_summary=[]
-    course_name=[]
-    dep_name=[]
-
-    for i in data:
-        lesson_id.append(i[0])
-        lesson_title.append(i[1])
-        lesson_tags.append(i[2])
-        lesson_summary.append(i[3])
-        course_name.append(i[4])
-        dep_name.append(i[5])
-
-    mydict={
-        'lesson_id':lesson_id,
-        'lesson_title':lesson_title,
-        'lesson_tags':lesson_tags,
-        'lesson_summary':lesson_summary,
-        'course_name':course_name,
-        'dep_name':dep_name
-        }
-    lessons = pd.DataFrame(mydict) #creating dataframe throught dictionary
-
-    # Converting to list 
-    lessons['lesson_title'] =lessons['lesson_title'].apply(lambda x:x.split())
-    lessons['lesson_summary'] =lessons['lesson_summary'].apply(lambda x:x.split())
-    lessons['lesson_tags'] =lessons['lesson_tags'].apply(lambda x:x.split(","))
-    lessons['course_name'] = lessons['course_name'].apply(lambda x: x.split(","))
-    lessons['dep_name'] = lessons['dep_name'].apply(lambda x: x.split(","))
-
-    # Removing spaces from course_name and dep_name
-    lessons['dep_name']=lessons['dep_name'].apply(lambda x:[i.replace(" ", "") for i in x])
-    lessons['course_name']=lessons['course_name'].apply(lambda x:[i.replace(" ", "") for i in x])
-
-    # Creating new column 
-    lessons['tags'] = lessons['lesson_title'] + lessons['lesson_tags'] + lessons['lesson_summary'] + lessons['course_name'] + lessons['dep_name']
-    lessons['tags'][0]
-
-    # Creating new dataframe 
-    lessons_tags_df = lessons[['lesson_id','lesson_title','tags']]
-
-    # Converting back to String 
-    lessons_tags_df['tags'] = lessons_tags_df['tags'].apply(lambda x:" ".join(x))
-    lessons_tags_df['lesson_title'] = lessons_tags_df['lesson_title'].apply(lambda x:" ".join(x))
-
-    # Converting to Lowercase
-    lessons_tags_df['tags'] =lessons_tags_df['tags'].apply(lambda x:x.lower())
-
-    # Creating vectors 
-    cv = CountVectorizer(max_features=2000, stop_words='english')
-    vectors = cv.fit_transform(lessons_tags_df['tags']).toarray()
-    # cv.get_feature_names()
-
-    # calculating similarities 
-    similarity=cosine_similarity(vectors)
-
-    # Dumping files 
-    print("dumpinig files")
-    pickle.dump(lessons_tags_df, open('pkl_files/lessons_tags_df.pkl', 'wb'))
-    pickle.dump(similarity, open('pkl_files/similarity.pkl', 'wb'))
-
-
-"""
-# Converting major into list
-# def toList(str):
-#     return str.split(',')
-
-# def reloadRecomm():
-#     print('inside relaod Recommendation')
-#     lessons = pd.read_csv('csv_files/lessons.csv')
-#     lessons.isnull().sum()
-#     lessons.duplicated().sum()
-#     lessons = lessons[['Title', 'course', 'Major']]
-#     lessons_orig = lessons.copy()
-#     lessons['Major']=lessons['Major'].apply(toList)
-#     lessons['Title']=lessons['Title'].apply(lambda x:x.split())
-#     # # Removing spaces from Course
-#     lessons['course']=lessons['course'].apply(lambda x:x.replace(" ", ""))
-#     # Converiting to list.
-#     lessons['course']=lessons['course'].apply(toList)
-#     lessons['tags']= lessons['Title']+lessons['course']+lessons['Major']
-    
-#     new_df = lessons[['Title','tags']]
-#     # Converting back to String 
-#     new_df['tags'] = new_df['tags'].apply(lambda x:" ".join(x))
-#     # Converting to Lowercase
-#     new_df['tags'] = new_df['tags'].apply(lambda x:x.lower())
-#     new_df['tags']
-#     cv = CountVectorizer(max_features=2000, stop_words='english')
-#     vectors = cv.fit_transform(new_df['tags']).toarray()
-#     similarity=cosine_similarity(vectors)
-
-#     print('dumping files')
-#     pickle.dump(lessons_orig, open('pkl_files/lessons.pkl', 'wb'))
-#     pickle.dump(similarity, open('pkl_files/similarity.pkl', 'wb'))
-
-"""
-
-
+from .recommendation import reloadRecommendation
 
 
 # Create your views here.
@@ -169,15 +45,10 @@ def handleLogout(request):
     return redirect('AdminLogin')
 
 from django.views.decorators.cache import cache_control
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def dashboard(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-        reloadRecommendation()
-        # try:
-        #     fetchLinks("this us")
-        # except:
-        #     print("Something went wrong")
-
+        
         total_course = len(Course.objects.all())
         total_lesson = len(Lesson.objects.all())
         total_questions = len(Query.objects.all())
@@ -395,6 +266,7 @@ def addCourse(request):
             newCourse = Course(course_name=course_name,
                                course_pic=course_pic, department=department)
             newCourse.save()
+            reloadRecommendation()
             return redirect('/admin1/courses/')
 
         context = {
@@ -494,10 +366,19 @@ def updateLesson(request, lesson_slug):
                 lesson_desc = lessonForm.cleaned_data['lesson_desc']
                 course = lessonForm.cleaned_data['course']
                 course = Course.objects.filter(course_name=course).first()
+                lesson_tags = lessonForm.cleaned_data['lesson_tags']
+                lesson_summary = lessonForm.cleaned_data['lesson_summary']
 
-                Lesson(lesson_id=lesson.lesson_id,lesson_title=lesson_title,
-                       lesson_desc=lesson_desc, course=course).save()
+                lesson.lesson_title = lesson_title
+                lesson.lesson_desc = lesson_desc
+                lesson.course = course
+                lesson.lesson_summary = lesson_summary
+                lesson.lesson_tags = lesson_tags
 
+                lesson.save()
+                # Lesson(lesson_id=lesson.lesson_id,lesson_title=lesson_title,
+                    #    lesson_desc=lesson_desc, course=course).save()
+                reloadRecommendation()
                 return redirect('Lessons')
         else:
             lessonForm = LesssonForm(instance=lesson)
@@ -518,6 +399,7 @@ def deleteLesson(request, lesson_slug):
     if not request.user.is_anonymous and request.user.is_superuser:
         lesson = Lesson.objects.get(lesson_slug=lesson_slug)
         lesson.delete()
+        reloadRecommendation()
         return redirect('Lessons')
     else:
         messages.error(request, 'Acess denied. Try again')
@@ -533,11 +415,16 @@ def addLesson(request):
                 lesson_desc = lessonForm.cleaned_data['lesson_desc']
                 course = lessonForm.cleaned_data['course']
                 course = Course.objects.filter(course_name=course).first()
+                lesson_summary = lessonForm.cleaned_data['lesson_summary']
+                lesson_tags = lessonForm.cleaned_data['lesson_tags']
 
                 Lesson(lesson_title=lesson_title,
-                       lesson_desc=lesson_desc, course=course).save()
+                       lesson_desc=lesson_desc, course=course, lesson_summary=lesson_summary, lesson_tags=lesson_tags).save()
 
-                return redirect('Lessons')
+                newLesson = Lesson.objects.filter(lesson_title=lesson_title).first()
+                reloadRecommendation()
+                links = scraper(newLesson.lesson_title)
+                return render(request, 'links/view-generated-link.html', {"list_of_links" : links, 'lesson':newLesson})
         else:
             lessonForm = LesssonForm()
 
@@ -717,19 +604,14 @@ def deleteLink(request, link_id):
 
 def addLink(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-        
         if request.method == 'POST':
-            link_title = request.POST.get('link_title')
-            link_url= request.POST.get('link_url')
             lesson_slug= request.POST.get('lesson_slug')
             lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
-
-            SimilarLinks(link_title=link_title, link_url=link_url, lesson=lesson).save()
-            messages.success(request, "Link added successfully")
-            return redirect('SimilarLinks')
+            links = scraper(lesson.lesson_title)
+            return render(request, 'links/view-generated-link.html', {"list_of_links" : links, 'lesson':lesson})
 
         context = {
-            'lesson_list':Lesson.objects.all(),
+            'lesson_list':Lesson.objects.filter(),
             'queries_is_active': True,
         }
 
@@ -738,6 +620,24 @@ def addLink(request):
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
+
+
+def saveLinkToDb(request):
+    if request.method == "POST":
+        form_data = request.POST
+        link_title = form_data['link_title']
+        link_url = form_data['link_url']
+        lesson_slug = form_data['lesson_slug']
+        lesson = Lesson.objects.filter(lesson_slug = lesson_slug).first()
+
+        if not SimilarLinks.objects.filter(link_title=link_title ,link_url = link_url):
+            similarLink = SimilarLinks(link_title=link_title, link_url=link_url, lesson=lesson).save()
+            response_data = {"success": "form data received successfully"}
+        else:
+            response_data = {"error": "Something went wrong"}
+        
+        return JsonResponse(response_data)
+    
 
 
 # Search 
@@ -826,7 +726,7 @@ def fetchLinks(lesson_title):
 
     # Creating soup from the fetched request
     soup = BeautifulSoup(request_result.text, "html.parser")
-
+    print(soup)
     # all major headings of our search result,
     heading_object = soup.find_all('h3')
 
@@ -860,7 +760,6 @@ def fetchLinks(lesson_title):
         list.append(link_object[index])
 
         linksInfo.append(list)
-
+    
     return linksInfo
-
 

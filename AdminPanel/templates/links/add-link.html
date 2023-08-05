@@ -8,7 +8,7 @@
       <div class="page-header">
          <div class="row align-items-center">
             <div class="col">
-               <h3 class="page-title">Add New Query</h3>
+               <h3 class="page-title">Add New Link</h3>
                <ul class="breadcrumb">
                   <li class="breadcrumb-item"><a href="{% url 'Dashboard' %}">Dashboard</a></li>
                   <li class="breadcrumb-item"><a href="{% url 'Queries' %}">Links</a></li>
@@ -22,13 +22,13 @@
 
       <hr>
 
-      <div class="row">
+      <!-- <div class="row">
          <div class="col-sm-12">
             <div class="card">
                <div class="card-body">
                   <form method="post" enctype="multipart/form-data" class="px-5">
                      <div class="col-12">
-                        <h5 class="form-title"><span>Query Information</span></h5>
+                        <h5 class="form-title"><span>Link Information</span></h5>
                      </div>
                      {% csrf_token %}
                      <div class="col-12">
@@ -58,6 +58,36 @@
                      </div>
                      <div class="col-12">
                         <button type="submit" class="btn btn-primary">Add</button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+
+ -->
+
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+               <div class="card-body">
+                  <form method="post" enctype="multipart/form-data" class="px-5" method="get">
+                     <div class="col-12">
+                        <h5 class="form-title"><span>Generate Links</span></h5>
+                     </div>
+                     {% csrf_token %}
+                     <div class="col-12">
+                        <div class="form-group">
+                           <label>Lesson</label>
+                           <select class="form-control" required name="lesson_slug" id="lesson">
+                              {% for lesson in lesson_list %}
+                              <option value="{{lesson.lesson_slug}}">{{lesson.lesson_title}}</option>
+                              {% endfor %}
+                           </select>
+                        </div>
+                     </div>
+                     <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Generate</button>
                      </div>
                   </form>
                </div>

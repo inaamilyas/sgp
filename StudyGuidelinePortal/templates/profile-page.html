@@ -219,7 +219,13 @@ Profile | SGP
         let newImage = document.createElement('img');
         newImage.src=image;
         imagePreviewDiv.className = 'form-group';
+
+        // if there is already image is selected already then remove that image
+        if(imagePreviewDiv.childElementCount > 0){
+            imagePreviewDiv.innerHTML = '';
+        }
         imagePreviewDiv.appendChild(newImage)
+        
     }
 </script>
 {% endblock customscript %}

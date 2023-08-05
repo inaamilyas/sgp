@@ -42,9 +42,10 @@
                             <a href="/edit-query/{{query.query_slug}}/" class="btn btn-sm bg-success-light mr-2">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <a href="/del-query/{{query.query_slug}}/" class="btn btn-sm bg-danger text-white">
+                            <!-- <a href="/del-query/{{query.query_slug}}/" class="btn btn-sm bg-danger text-white">
                                 <i class="fas fa-trash"></i>
-                            </a>
+                            </a> -->
+                            <button class="btn btn-sm bg-danger text-white" id="showDelQueryModal" data-delete-query-url="/del-query/{{query.query_slug}}/"><i class="fas fa-trash"></i></button>
                         </div>
                         {% endif %}
                         {% comment %} <a href="#" class="btn btn-dark ans-btn">Answer Form</a> {% endcomment %}
@@ -92,16 +93,15 @@
                             <span class="ans-desc">{{answer.ans_desc | safe}}</d>
                         </div>
                         <div class="card-bottom">
-                            <form action="/ans-like/" method="post">
+                            <form action="/ans-like/" class="ans-like-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="ans-id" value="{{answer.ans_id}}">
 
                                 {% if user.is_authenticated %}
-                                <button type="submit" class="btn btn-sm bg-white ans-like-btn"><i class="fa fa-thumbs-up like-icon {% if is_liked %}text-primary{% endif %} "></i></button>
+                                <button type="submit" class="btn btn-sm bg-white ans-like-btn "><i class="fa fa-thumbs-up like-icon {% if is_liked %}text-primary{% endif %} "></i></button>
                                 {% else %}
                                 <button type="submit" class="btn btn-sm bg-white ans-like-btn" disabled><i class="fa fa-thumbs-up like-icon"></i></button>
                                 {% endif %}
-
                             </form>
                             <!-- <a href="#" class="ans-like-btn">Like</a> -->
                             {% if request.user.id == answer.user.id %}
@@ -109,9 +109,10 @@
                                 <a href="/edit-answer/{{answer.ans_id}}/" class="btn btn-sm bg-success-light mr-2">
                                     <i class="fas fa-pen"></i>
                                 </a>
-                                <a href="/delete-answer/{{answer.ans_id}}/" class="btn btn-sm bg-danger text-white">
+                                <!-- <a href="/delete-answer/{{answer.ans_id}}/" class="btn btn-sm bg-danger text-white">
                                     <i class="fas fa-trash"></i>
-                                </a>
+                                </a> -->
+                                <button class="btn btn-sm bg-danger text-white" id="showDelAndModal" data-delete-ans-url="/delete-answer/{{answer.ans_id}}/"><i class="fas fa-trash"></i></button>
                             </div>
                             {% endif %}
                         </div>
@@ -169,8 +170,79 @@
         <div class="col-md-2"></div>
     </div>
 </section>
+
+<!-- Delete Query Modal -->
+ <div class="modal fade" id="querydeleteModal" tabindex="-1" aria-labelledby="delQueryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="delQueryModalLabel"> <i class="fa fa-trash"></i>&nbsp; &nbsp;
+                    Delete Query</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <span class="text-danger"> <i class="fa fa-trash fa-3x mt-4"></i></span>
+                <div class="mt-4" style="height: 50px; font-weight: bold;">Are you sure you want to delete Query?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-outline-danger btn-sm del-query-btn" href="">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Answer Modal -->
+ <div class="modal fade" id="ansdeleteModal" tabindex="-1" aria-labelledby="delAnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="delAnsModalLabel"> <i class="fa fa-trash"></i>&nbsp; &nbsp;
+                    Delete Answer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <span class="text-danger"><i class="fas fa-trash fa-3x mt-4"></i></span>
+                <div class="mt-4" style="height: 50px; font-weight: bold;">Are you sure you want to delete answer?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-outline-danger btn-sm del-ans-btn" href="">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock content %}
 
 {% block customscript %}
 <script src="{% static '/js/countQueryViews.js' %}"></script>
+<script src="{% static '/js/likeUnlikeAns.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        // Event handler for the button click
+        $('#showDelQueryModal').on('click', function() {
+            let deleteUrl = $(this).data('delete-query-url');
+            
+            $('.del-query-btn').attr('href', deleteUrl);
+            // Show the modal using jQuery
+            $('#querydeleteModal').modal('show');
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Event handler for the button click
+        $('#showDelAndModal').on('click', function() {
+            let deleteUrl = $(this).data('delete-ans-url');
+            
+            $('.del-ans-btn').attr('href', deleteUrl);
+            // Show the modal using jQuery
+            $('#ansdeleteModal').modal('show');
+        });
+    });
+</script>
+
 {% endblock customscript %}

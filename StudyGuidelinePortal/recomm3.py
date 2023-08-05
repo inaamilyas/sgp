@@ -3,14 +3,15 @@ import pickle
 from .models import *
 
 class LRS:
-
+    lessonsOrig_df = pd.DataFrame()
+    ratings_df= pd.DataFrame()
+    watchtime_df = pd.DataFrame()
     def __init__(self):
         self.load_pkl_file()
 
         lessons = Lesson.objects.values('lesson_id', 'lesson_title', 'views')
         ratings =LessonReview.objects.values('id', 'user', 'lesson', 'rate')
         watchtime =LessonWatchTime.objects.values('user', 'lesson', 'watch_time')
-
         self.lessonsOrig_df = pd.DataFrame(list(lessons))
         self.ratings_df= pd.DataFrame(list(ratings))
         self.watchtime_df = pd.DataFrame(list(watchtime))
@@ -54,7 +55,6 @@ class LRS:
 
             lesson_rated_by_user(loggedin_user, user_history_lessons)
             lesson_watched_by_user(loggedin_user, user_history_lessons)
-            print(user_history_lessons)
             range=2
             if len(user_history_lessons) < 3: range=5
             for id in user_history_lessons:

@@ -30,20 +30,21 @@ Integrating recomm system (done)
 cannot pick uploaded pkl files (done)
 Login to give rating styling (done)
 login to add answers (half done)
+confirm delete page (done) query answer
 
-confirm delete page
 check type of message in template 
 time formatting of lessons 
 add update form authentications
 Profile page working
 
 
-Adding some features using ajax 
+Adding some features using ajax
 sorting based on time and likes 
 like and unlike
 ratings 
 
 lesson-menu styling
+error while adding query
 
 
 back button
@@ -51,6 +52,8 @@ how to add image field in django form
 how to send context data with redirect
 how to stop setInternal function in js
 run a function only when the screen is in focus in js 
+
+updated changes from all update views
 
 Pages 
 sign up
@@ -61,11 +64,10 @@ lesson
 questions
 answer
 add questions
-add answers
+add answers 
 profile with previous activities
-about 
-contact 
-confirm delete page
+about  
+confirm delete page (done) query answer 
 
 
 Fixes of Bugs
@@ -73,7 +75,7 @@ Show courses without lessons and reviews (fixed)
 
 Know 
 why renameImage is called without paranthesis in models 
-    because it acts as a property of class that is why it is called without paranthesis
+    because if we use paranthesis the function is called 
 
 
 icons 
@@ -84,27 +86,13 @@ Course Link
 http://ccw.vcomsats.edu.pk/Home/ListContent?search=&disciplineId=1&typeId=1
 
 how to reload django server automatically
-why python code not use updated pickle files
+why python code not use updated pickle files 
 
-I am making a django project. I create a custom class in customclass.py
-import mysql.connector
-class MyClass:
-    data = []
-    
-    mydb = mysql.connector.connect(
-                host="127.0.0.1",
-                user="root",
-                password="",
-                database="study_guideline_portal",
-            )
-    mycursor = mydb.cursor()
-    def __init__(self):
-        # Fetching lessons from database and creating dataframe
-        self.mycursor.execute('SELECT * FROM studyguidelineportal_data;')
-        data = self.mycursor.fetchall()
-        print(data)
-then in a view in views.py i create an object 
-classobj = MyClass()
 
-then i made changes to the database using django admin panel but it shows old data 
-
+CDNs
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+  
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+$(document).ready( function () {
+    $('#myTable').DataTable();
+} );

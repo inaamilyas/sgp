@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.views.decorators.cache import cache_control
 from .recomm3 import LRS
+from urllib.parse import urlparse
 
 
 # Create your views here.
@@ -26,24 +27,25 @@ def home(request):
 
     # Recommendation code 
     rec_obj = LRS()
-    print(rec_obj.popular_recomm())
     if not request.user.is_anonymous:
         # make recommendations 
         for lesson_id in rec_obj.user_interest_recomm(request.user.id):
-            lesson = Lesson.objects.get(lesson_id=lesson_id)
+            lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
             if lesson:
                 rec_lessons.append(lesson)
                 rec_courses.add(lesson.course)
-    else:
-        rec_lessons=Lesson.objects.all()
-        rec_courses=Course.objects.all()
 
     popular_lessons_ids=rec_obj.popular_recomm()
     popu_lessons = []
     for lesson_id in popular_lessons_ids:
-            lesson = Lesson.objects.get(lesson_id=lesson_id)
+            lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
             if lesson:
                 popu_lessons.append(lesson)
+
+    # rec_lessons = Lesson.objects.all()
+    # popu_lessons = Lesson.objects.all()
+    # rec_courses = Course.objects.all()
+
 
     context = {
         'rec_lesson_details': map_lesson_details(rec_lessons),
@@ -116,12 +118,15 @@ def courseLesson(request, course_name, lesson_name):
                 next_lesson = course_lessons[i+1]
 
     # Similar lessons
+    # similar_lessons = Lesson.objects.all()
     similar_lessons = []
     lrs = LRS()
-    for lesson_id in lrs.similarity_recomm(lesson_details.lesson_id):
-        lesson = Lesson.objects.get(lesson_id=lesson_id)
-        if lesson:
-            similar_lessons.append(lesson)
+    lrs_simil = lrs.similarity_recomm(lesson_details.lesson_id)
+    if lrs_simil:
+        for lesson_id in lrs_simil:
+            lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
+            if lesson:
+                similar_lessons.append(lesson)
 
 
     # Latest lessons (- is used to reverse the order)
@@ -129,16 +134,12 @@ def courseLesson(request, course_name, lesson_name):
 
     # Links
     links = SimilarLinks.objects.filter(lesson=lesson_details.lesson_id)
+
     website_info = []
-    for link in links:
-        url = link.link_url[12:]
-        web_name = ''
-        for ch in url:
-            if ch == '.':
-                break
-            else:
-                web_name += ch
-        website_info.append([link, web_name])
+    if links:
+        for link in links:
+            web_name = extract_main_url(link.link_url)
+            website_info.append([link, web_name])
 
     context = {
         'lesson_details': lesson_details,
@@ -224,11 +225,11 @@ def askQuery(request):
             query_title = queryForm.cleaned_data['query_title']
             query_desc = queryForm.cleaned_data['query_desc']
             course = queryForm.cleaned_data['course']
-            query_slug = queryForm.cleaned_data['query_slug']
+            # query_slug = queryForm.cleaned_data['query_slug']
             user = request.user
 
             newQuery = Query(query_title=query_title, query_desc=query_desc,
-                             course=course, user=user, query_slug=query_slug)
+                             course=course, user=user)
             newQuery.save()
             return redirect('/queries')
 
@@ -293,10 +294,13 @@ def editQuery(request, query_slug):
             query_title = queryForm.cleaned_data['query_title']
             query_desc = queryForm.cleaned_data['query_desc']
             course = queryForm.cleaned_data['course']
-            user = request.user
-            Query(query_id=query.query_id, query_title=query_title, query_desc=query_desc,
-                  course=course, user=user, created_at=query.created_at).save()
-
+            # user = request.user
+            # Query(query_id=query.query_id, query_title=query_title, query_desc=query_desc,
+            #       course=course, user=user, created_at=query.created_at).save()
+            query.query_title = query_title
+            query.query_desc = query_desc
+            query.course = course
+            query.save()
             return redirect(f'/query/{query_slug}/')
     else:
         queryForm = QueryForm(instance=query)
@@ -335,15 +339,16 @@ def addAnswer(request, query_slug):
 @login_required
 def editAnswer(request, answer_id):
     answer = Answer.objects.get(ans_id=answer_id)
-    user = request.user
+    # user = request.user
     if request.method == 'POST':
         ansForm = AnswerForm(request.POST, instance=answer)
         if ansForm.is_valid():
             ans_desc = ansForm.cleaned_data['ans_desc']
 
-            Answer(ans_id=answer_id, ans_desc=ans_desc, user=user,
-                   query=answer.query, created_at=answer.created_at).save()
-
+            # Answer(ans_id=answer_id, ans_desc=ans_desc, user=user,
+            #        query=answer.query, created_at=answer.created_at).save()
+            answer.ans_desc = ans_desc
+            answer.save()
             return redirect(f'/query/{answer.query.query_slug}/')
     else:
         ansForm = AnswerForm(instance=answer)
@@ -367,7 +372,7 @@ def delAnswer(request, answer_id):
 
 @login_required
 def ansLike(request):
-
+    context={}
     if request.method == 'POST':
         ans_id = request.POST.get('ans-id')
         ans = Answer.objects.get(ans_id=ans_id)
@@ -376,12 +381,19 @@ def ansLike(request):
 
         if len(Like.objects.filter(user=user, answer=ans)) > 0:
             # print('Already liked')
-            like = Like.objects.get(user=user, answer=ans)
-            Like(id=like.id, user=user, answer=ans).save()
+            Like.objects.get(user=user, answer=ans).delete()
+
+            context = {
+                'unliked':True,
+            }
         else:
             Like(user=user, answer=ans).save()
-
-    return redirect(f'/query/{query.query_slug}/')
+            context = {
+                'liked':True,
+            }
+            
+    # return redirect(f'/query/{query.query_slug}/')
+    return JsonResponse(context)
 
 
 def sortAnswer(request):
@@ -692,9 +704,12 @@ def handleLessonReviews(request):
             # update the existing ratings
             existing_review = LessonReview.objects.get(
                 user=user, lesson=lesson)
-            update_review = LessonReview(
-                id=existing_review.id, user=user, lesson=lesson, rate=rate)
-            update_review.save()
+            existing_review.rate = rate 
+            existing_review.save()
+            # update_review = LessonReview(
+            #     id=existing_review.id, user=user, lesson=lesson, rate=rate)
+            # update_review.save()
+            
             # Send Success Message
         else:
             # Add new ratings
@@ -892,3 +907,9 @@ def sendVerifiCodeMail(email, auth_token):
         print('mail not sent')
     print(message)
     return True
+
+# function to extact main url 
+def extract_main_url(full_url):
+        parsed_url = urlparse(full_url)
+        main_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        return main_url

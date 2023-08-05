@@ -22,7 +22,7 @@
     {% if messages %}
     <div class="search-messages-container">
         {% for message in messages %}
-        <div class="alert alert-danger">
+        <div class="alert alert-{{ message.tags }}">
             {{message}}
         </div>
         {% endfor %}

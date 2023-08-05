@@ -12,10 +12,9 @@
 
     <link href="{% static '/fontawesome/css/all.css' %} " rel="stylesheet">
     <link rel="stylesheet" href="{% static '/css/style1.css' %}">
+    <link href="{% static '/plugins/datatable/datatable.jquery.css' %} " rel="stylesheet">
 
-    <style>
 
-    </style>
 </head>
 
 <body>
@@ -139,9 +138,14 @@
     </div>
     <script src="{% static '/jQuery/jQuery.min.js' %}"></script>
     <script src="{% static '/bootstrap/js/bootstrap.bundle.js' %} "></script>
-    <!-- <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script> -->
-    <!-- <script src="assets/js/popper.min.js"></script>
-    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script> -->
+
+    <!-- DataTAbles -->
+    <script src="{% static '/plugins/datatable/datatable.jquery.js' %}"></script>
+    <script>
+        $(document).ready( function () {
+            $('.mydatatable').DataTable();
+        } );
+    </script>
 
     {% block script %}
 

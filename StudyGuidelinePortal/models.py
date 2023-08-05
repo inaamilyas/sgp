@@ -133,9 +133,3 @@ class LessonWatchTime(models.Model):
     def __str__(self):
         return f'{self.user.username} | {self.lesson} | {self.watch_time} seconds'
     
-
-class Data(models.Model):
-    data = models.IntegerField()
-
-    def __str__(self):
-        return f'{self.data}'

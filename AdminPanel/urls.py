@@ -83,4 +83,13 @@ urlpatterns = [
          deleteLink, name='DeleteLink'),
 
 
+#     path('generate-link/<slug:lesson_slug>',
+#          generateLink, name='GenerateLink'),
+
+
+    path('save-link-to-db/',
+         saveLinkToDb, name='SaveLinkToDb'),
+
+
+
 ]

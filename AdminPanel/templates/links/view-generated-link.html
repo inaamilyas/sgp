@@ -1,0 +1,116 @@
+{% extends "adminbase.html" %}
+
+{% block title %}Generated Links | SGP{% endblock title %}
+
+{% block content %}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Generated Links</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Generated Links</li>
+                    </ul>
+                </div>
+                <!-- <div class="col-auto text-right float-right ml-auto">
+               <a href=" {% url 'AddLink' %} " class="btn btn-primary">Add Link<span class="fa fa-plus
+                        ml-1"></span></a>
+            </div> -->
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <table class="table table-hover table-center mb-0 datatable">
+                            <thead>
+                                <tr>
+                                    <th>Links for <h6>{{lesson.lesson_title}}</h6></th>
+                                    <!-- <th class="text-right">Action</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for index, title, link in list_of_links %}
+                                <tr>
+                                    <td>
+                                        <form method="post" id="link-form-{{index}}" method="post">
+                                            {% csrf_token %}
+                                            <div>
+                                                <label for="link_title">
+                                                    <h5 class="table-avatar">
+                                                        <a href="{{link}}" target="_blank">{{title}}</a>
+                                                    </h5>
+                                                </label>
+                                                <input type="hidden" name="link_title" id="" value="{{title}}">
+                                            </div>
+                                            <input type="hidden" name="lesson_slug" id="" value="{{lesson.lesson_slug}}">
+
+                                            <div>
+                                                <label for="link_url">{{link}}</label>
+                                                <input type="hidden" name="link_url" id="" value="{{link}}">
+                                                <button type="submit" id="submit-btn-{{index}}" class="btn btn-primary float-right">Add</button>
+                                                <p id="success-p-{{index}}" class="btn btn-success float-right"
+                                                    style="display: none;">Added</p>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const forms = document.querySelectorAll('form');
+
+        forms.forEach((form, index) => {
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                let success_p = document.getElementById(`success-p-${index-1}`);
+                let submit_btn = document.getElementById(`submit-btn-${index-1}`);
+                submit_btn.innerText = "Adding...";
+                const formData = new FormData(form);
+
+                fetch("/admin1/save-link-to-db/", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // console.log("response from Django : ", data);
+                        submit_btn.style.display = "none";
+                        if(data.success){
+                            success_p.style.display = "block";
+                        } else{
+                            success_p.style.display = "block";
+                            success_p.classList.add('btn-danger')
+                            success_p.innerText='Already Exist' 
+                        }
+                        
+                    })
+                    .catch(error => {
+                        console.log('error : ', error);
+                        button.innerText = "Try Again";
+                    })
+            })
+        })
+    })
+</script>
+{% endblock script %}
