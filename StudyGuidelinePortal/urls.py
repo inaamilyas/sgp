@@ -41,7 +41,7 @@ urlpatterns = [
     path('change-password/', changePassword, name='ChangePassword'),
     path('logout/', handleLogout, name='Logout'),
     path('profile/', profile, name='Profile'),
-    # path('about/', about, name='About'),
+    path('about/', about, name='About'),
 
     path('reviews/', handleLessonReviews, name='Reviews'),
     path('ans-like/', ansLike, name='AnsLike'),

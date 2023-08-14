@@ -51,6 +51,21 @@ class Course(models.Model):
         return self.course_name
 
 
+class MyCourse(models.Model):
+    course_id = models.AutoField(primary_key=True)
+    course_name = models.CharField(max_length=200)
+    course_pic = models.ImageField(
+        upload_to='images/course/', default=None, null=True)
+    department = models.ManyToManyField(
+        Department, default=None)
+    # course_pic = models.ImageField(upload_to='StudyGuidelinePortal/static/images/course/')
+    course_slug = AutoSlugField(
+        populate_from='course_name', unique=True, null=True, default=None)
+
+    def __str__(self):
+        return self.course_name
+
+
 class Lesson(models.Model):
     lesson_id = models.AutoField(primary_key=True)
     lesson_title = models.CharField(max_length=200)
@@ -61,8 +76,7 @@ class Lesson(models.Model):
     lesson_tags = models.TextField(default="")
     lesson_summary = models.CharField(max_length=500, default="")
     time = models.DateTimeField(auto_now_add=True)
-    lesson_slug = AutoSlugField(
-        populate_from='lesson_title', unique=True, null=True, default=None)
+    lesson_slug = AutoSlugField( populate_from='lesson_title', unique=True, null=True, default=None)
 
     def __str__(self):
         return self.lesson_title
@@ -76,8 +90,7 @@ class Query(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     views = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    query_slug = AutoSlugField(
-        populate_from='query_title', unique=True, null=True, default=None)
+    query_slug = AutoSlugField( populate_from='query_title', unique=True, null=True, default=None)
 
     def __str__(self):
         return self.query_title
@@ -122,7 +135,8 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.user} | {self.answer}'
-    
+
+
 class LessonWatchTime(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -132,4 +146,3 @@ class LessonWatchTime(models.Model):
 
     def __str__(self):
         return f'{self.user.username} | {self.lesson} | {self.watch_time} seconds'
-    

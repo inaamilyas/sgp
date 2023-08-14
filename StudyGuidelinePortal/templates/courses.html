@@ -69,6 +69,49 @@
 
                 </div>
             </div>
+
+
+            <div class="col-md-12 px-5">
+                <h2 class="course-heading">All My Courses</h2>
+                <div class="row">
+
+                    <!-- Course Card  -->
+                    {% for course, first_lesson, no_of_lessons in mycourses %}
+                    <div class="col-sm-6 col-md-4 col-xl-3 mb-3">
+                        <div class="card course-card border-0 p-0 shadow">
+                            <div class="course-img">
+                                <img src="/media/{{course.course_pic}}" alt="">
+                                <!-- <img src="/static/images/course/coursecard.PNG" alt=""> -->
+                            </div>
+                            <div class="course-info">
+                                <div class="dep_list">
+                                    {% for dep in course.department.all %}
+                                    <small class="category">{{dep.dep_name}}</small>
+                                    {% endfor %}
+                                </div>
+
+                                <h4>{{course.course_name}}</h4>
+                                <div class="course-meta">
+                                    <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
+                                    <!-- <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    </a> -->
+                                    {% if first_lesson %}
+                                    <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    </a>
+                                    {% else %}
+                                    <button disabled class="course-link"><i class="fa-sharp fa-solid fa-arrow-right text-center"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
         </div>
     </section>
 </div>

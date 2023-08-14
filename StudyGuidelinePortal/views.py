@@ -58,21 +58,23 @@ def home(request):
 
 def courses(request):
     all_courses = Course.objects.all()
+    mycourses = MyCourse.objects.all()
 
     popu_courses = []
-    for course in all_courses:
-        first_lesson = None
-        # if there is any lesson then get it
-        no_of_lessons = len(Lesson.objects.filter(course=course))
-        if (no_of_lessons > 0):
-            first_lesson = Lesson.objects.filter(
-                course=course).first().lesson_slug
+    # for course in all_courses:
+    #     first_lesson = None
+    #     # if there is any lesson then get it
+    #     no_of_lessons = len(Lesson.objects.filter(course=course))
+    #     if (no_of_lessons > 0):
+    #         first_lesson = Lesson.objects.filter(
+    #             course=course).first().lesson_slug
 
-        popu_courses.append([course, first_lesson])
+    #     popu_courses.append([course, first_lesson])
 
     context = {
         'course_details': map_course_details(all_courses),
-        'popu_courses': popu_courses,
+        'mycourses': map_mycourse_details(mycourses),
+        # 'popu_courses': popu_courses,
     }
     return render(request, 'courses.html', context)
 
@@ -782,6 +784,11 @@ def calcLessonWatchTime(request, lesson_slug, watch_time):
 
 
 # Handling 404 page error
+def about(request):
+    return render(request, 'about.html')
+
+
+# Handling 404 page error
 def handle404Error(request, exception):
     return render(request, '404.html')
 
@@ -876,6 +883,18 @@ def map_course_details(courses):
         no_of_lessons = len(Lesson.objects.filter(course=course))
         course_details.append([course, first_lesson, no_of_lessons])
     return course_details
+
+def map_mycourse_details(mycourses):
+    mycourse_details = []
+    course = Course.objects.filter(course_id = 1).first()
+    for mycourse in mycourses:
+        first_lesson = None
+        # if there is any lesson then get it
+        if (len(Lesson.objects.filter(course=course)) > 0):
+            first_lesson = Lesson.objects.filter(course=course)[0].lesson_slug
+        no_of_lessons = len(Lesson.objects.filter(course=course))
+        mycourse_details.append([mycourse, first_lesson, no_of_lessons])
+    return mycourse_details
 
 
 # Send Mail After Registration
