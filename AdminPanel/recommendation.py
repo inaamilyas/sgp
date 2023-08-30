@@ -15,20 +15,22 @@ def reloadRecommendation():
     lessons_df=pd.DataFrame(all_lessons)
     lessons_df.rename(columns={'course': 'course_id'}, inplace=True)
     
-    # Creating dataframe from courses 
-    all_courses = Course.objects.values("course_id", 'course_name', 'department')
-    courses_df = pd.DataFrame(all_courses)
-    courses_df.rename(columns={'department': 'dep_id'}, inplace=True)
-    
-     # Creating dataframe from departments 
-    dep = Department.objects.values('dep_id', 'dep_name')
-    dep_df = pd.DataFrame(dep)
+    # Creating dataframe from courses and department
+    courses = Course.objects.all()
+    data = []
+    for course in courses:
+        department_names = ', '.join([department.dep_name for department in course.department.all()])
+        course_data = {
+            'course_id': course.course_id,
+            'course_name': course.course_name,
+            'dep_name': department_names,
+        }
+        data.append(course_data)
+    courses_df = pd.DataFrame(data)
 
     # Merging all dfs into a single df 
-    new_df = pd.merge(lessons_df, courses_df, on='course_id', how='left')
-    lessons = pd.merge(new_df, dep_df, on='dep_id', how='left') #final dataframe
+    lessons = pd.merge(lessons_df, courses_df, on='course_id', how='left')
     
-
     # Converting to list 
     lessons['lesson_title'] =lessons['lesson_title'].apply(lambda x:x.split())
     lessons['lesson_summary'] =lessons['lesson_summary'].apply(lambda x:x.split())

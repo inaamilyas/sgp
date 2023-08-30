@@ -8,6 +8,11 @@
 <section class="container-fluid questions">
     <div class="row">
         <div class="col-md-2 ques-sidebar">
+            <!-- <ul>
+                <li><button class="btn" id="all-questions">All Questions</button></li>
+                <li><button class="btn" id="latest-questions">Latest Questions</button></li>
+                <li><button class="btn" id="popular-questions">Popular Questions</button></li>
+            </ul> -->
             <ul>
                 <li><a href="/queries">All Questions</a></li>
                 <li><a href="/latest-queries">Latest Questions</a></li>
@@ -15,11 +20,30 @@
             </ul>
         </div>
         <div class="col-md-8 show-ques">
-            <div class="container">
-                <h1 class="bg-white p-3">{{type}} Questions</h1>
+            <div class="container questions-list">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h1 class="bg-white p-3">{{type}} Questions</h1>
+                    </div>
+                    <div class="col-md-6 m-auto">
+                        <span>Filter Questions By: </span>
+                        <select id="course-dropdown">
+                            <option value="all">All Courses</option>
+                            {% for course in all_courses %}
+                             <option value="{{course.course_name}}">{{course.course_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <!-- No Questions Found Message -->
+                <div id="no-questions-found" style="display: none;">No questions found for the selected course.</div>
+                
+                
                 <!-- Question card  -->
                 {% for query, answer_count in queries %}
-                <div class="question-card">
+                <div class="question-card wow fadeInUp">
                     <div class="card-top">
                         <div>
                             <span>{{query.created_at}}</span>
@@ -41,21 +65,53 @@
                         <a href="/query/{{query.query_slug}}/" class="btn btn-dark ans-btn">Answer</a>
                     </div>
                 </div>
-                <hr>
                 {% endfor %}
 
             </div>
         </div>
         <div class="col-md-2 ques-right">
             <a href="/ask-query/" class="btn btn-primary ask-ques-btn">Ask A Question</a>
-            <div class="total-ques-card">
+            <div class="total-ques-card wow fadeIn">
                 Questions<span>{{total_queries}}</span>
 
             </div>
-            <div class="total-ans-card">
+            <div class="total-ans-card wow fadeIn">
                 Answers<span>{{total_answers}}</span>
             </div>
         </div>
     </div>
 </section>
+
 {% endblock content %}
+
+{% block customscript %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dropdown = document.getElementById("course-dropdown");
+        const questionCards = document.querySelectorAll(".question-card");
+        const noQuestionsFoundMessage = document.getElementById("no-questions-found");
+
+        dropdown.addEventListener("change", function () {
+            const selectedCourse = dropdown.value;
+            let foundQuestions = false;
+
+            questionCards.forEach(card => {
+                const courseSpan = card.querySelector(".card-top span b");
+                if (selectedCourse === "all" || courseSpan.textContent === selectedCourse) {
+                    card.style.display = "block";
+                    foundQuestions = true;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            if (foundQuestions) {
+                noQuestionsFoundMessage.style.display = "none";
+            } else {
+                noQuestionsFoundMessage.style.display = "block";
+            }
+        });
+    });
+</script>
+{% endblock customscript %}

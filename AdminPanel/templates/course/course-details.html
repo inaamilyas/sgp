@@ -41,8 +41,14 @@
                                             <span class="info-span">{{course.course_name}}</span>
                                         </li>
                                         <li>
-                                            <span class="title-span">Department : </span>
-                                            <span class="info-span">{{course.department.dep_name}}</span>
+                                            <span class="title-span">Departments : </span>
+                                            <span class="info-span">
+                                                <ul style="padding: 0;">
+                                                {% for department in course.department.all %}
+                                                <li style="margin: 0;">{{department}}</li>
+                                                {% endfor %}
+                                                </ul>
+                                            </span>
                                         </li>
                                         <li>
                                             <span class="title-span">Course Slug : </span>

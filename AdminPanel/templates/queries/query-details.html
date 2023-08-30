@@ -54,11 +54,8 @@
                                             <span class="info-span">{{query.created_at }}</span>
                                         </li>
                                     </ul>
-<hr>
-                                    <ul>
-                                        <h2>All Answers</h2>
-                                        
-                                    </ul>
+                                    <hr>
+
                                 </div>
                             </div>
 
@@ -69,8 +66,84 @@
 
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-8">
+                <h2>All Answers</h2>
+            </div>
+            <div class="col-4"> <a href="/admin1/add-answer/{{query.query_slug}}" class="btn btn-primary" style="    display: block;margin: auto;width: fit-content;margin-right: 0;">Add Answer</a></div>
+        </div>
+
+        <div class="row">
+            <!-- Answer card  -->
+            {% if ans_like_count %}
+            {% for answer, total_likes in ans_like_count %}
+            <div class="answers-details-card  wow fadeInUp">
+                <div class="card-top">
+                    <div>
+                        <span>{{answer.created_at}}</span>
+                        <span>Likes {{total_likes}}</span>
+                    </div>
+                    <span>Answered by : <b>{{answer.user.first_name}} {{answer.user.last_name}}</b> </span>
+                </div>
+                <div class="card-middle">
+                    <span class="ans-desc">{{answer.ans_desc | safe}}</d>
+                </div>
+                <div class="card-bottom">
+                    <div>
+                        <a href="/admin1/update-answer/{{answer.ans_id}}/"
+                            class="btn btn-sm bg-success-light mr-2 wow fadeIn" data-wow-delay="0.5s">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <button class="btn btn-sm bg-danger text-white wow fadeIn showDelAndModal" id="showDelAndModal"
+                            data-delete-ans-url="/admin1/delete-answer/{{answer.ans_id}}/" data-wow-delay="0.5s"><i
+                                class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            {% endfor %}
+            {% endif %}
+
+        </div>
     </div>
 
 </div>
 
+<!-- Delete Answer Modal -->
+<div class="modal fade" id="ansdeleteModal" tabindex="-1" aria-labelledby="delAnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="delAnsModalLabel"> <i class="fa fa-trash"></i>&nbsp; &nbsp;
+                    Delete Answer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <span class="text-danger"><i class="fas fa-trash fa-3x mt-4"></i></span>
+                <div class="mt-4" style="height: 50px; font-weight: bold;">Are you sure you want to delete answer?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-outline-danger btn-sm del-ans-btn" href="">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}
+
+{% block script %}
+<script>
+    // Showing Modal 
+    $(document).ready(function () {
+        $('.showDelAndModal').on('click', function () {
+            let deleteUrl = $(this).data('delete-ans-url');
+
+            $('.del-ans-btn').attr('href', deleteUrl);
+            // Show the modal using jQuery
+            $('#ansdeleteModal').modal('show');
+        });
+    });
+</script>
+{% endblock script %}

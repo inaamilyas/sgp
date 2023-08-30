@@ -10,7 +10,7 @@
 
     <!-- Content and Sidebar -->
     <div class="row">
-        <div class="col-md-3 p-0">
+        <div class="col-md-3 p-0 wow fadeInLeft">
             <button class="menu-btn-lessons" id="side-menu-btn">Menu</button>
             <div class="lessons" id="lesson-sidebar">
                 <ul class="lessons-list">
@@ -39,10 +39,10 @@
                         <span><i class="fa-regular fa-eye"></i><span id="lesson-views-span">{{lesson_details.views}}</span></span>
                     </div>
                 </div>
-                <span class="lesson-desc">{{lesson_details.lesson_desc | safe}}</span>
+                <span class="lesson-desc wow fadeInUp">{{lesson_details.lesson_desc | safe}}</span>
 
                 <!-- Ratings  -->
-                <div class="give-ratings">
+                <div class="give-ratings  wow fadeInUp">
                     <form action="/reviews" method="get">
                         <input type="hidden" name="lesson_id" id="lesson_id" value="{{lesson_details.lesson_id}}">
                         <fieldset class="rating-wrapper">
@@ -109,7 +109,7 @@
     <!-- Similar lessons  -->
     <section class="container recomm-lessons py-3">
         <h2 class="section-heading">Similar Lessons</h2>
-        <div class="row">
+        <div class="row wow fadeInUp">
             <div class="col-12 m-auto">
                 <!-- Owl Carousel  -->
                 <div class="owl-carousel owl-theme">
@@ -150,7 +150,7 @@
 <section class="container-fluid links-section">
     <div class="row">
 
-        <div class="col-md-3 lastest-lessons-sidebar">
+        <div class="col-md-3 lastest-lessons-sidebar  wow fadeInLeft">
             <h3 class="text-center p-2">Latest Lessons</h3>
             <ul class="latest-lessons">
                 {% for lesson in latest_lessons_details %}
@@ -167,7 +167,7 @@
             <h2 class="mb-4 text-center">Want to read more! <span class="blue text-primary">Check out these useful
                     links</span>
             </h2>
-            <div class="row">
+            <div class="row wow fadeInUp">
                 <!-- Link card  -->
                 {% for link, web_name in website_info %}
                 <div class="col-md-10 mb-3">

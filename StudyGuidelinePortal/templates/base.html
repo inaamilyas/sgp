@@ -19,13 +19,28 @@
     <!-- Font Awesome-->
     <link href="{% static '/fontawesome/css/all.css' %} " rel="stylesheet">
 
+    <!-- Animate.css  -->
+    <link href="{% static '/animate/animate.min.css' %} " rel="stylesheet">
+
     <!-- Custom StyleSheet  -->
     <link rel="stylesheet" href="{% static '/css/style.css' %} ">
 
     <title>{% block title %}{% endblock title %}</title>
+
+
 </head>
 
 <body>
+
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-primary">
+        <!-- <h1 class="text-white">S G P</h1> -->
+        <div class="spinner-border color-white" role="status" style="width: 3rem; height: 3rem;"></div>
+
+    </div>
+    <!-- Spinner End -->
+
+
     <!-- Navbar  -->
     <nav class="navbar navbar-expand-md navbar-dark bg-primary">
         <div class="container">
@@ -48,7 +63,7 @@
                         <a class="nav-link text-white" href="/queries">Questions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">About Us</a>
+                        <a class="nav-link text-white" href="/about">About Us</a>
                     </li>
                     <!-- <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact Us</a>
@@ -58,15 +73,18 @@
                 <div class="nav-btns">
                     {% if user.is_authenticated %}
                     <div class="dropdown">
-                        <img src="{{user.profile.profile_pic.url}}" alt="" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        
+                        <img src="{{user.profile.profile_pic.url}}" alt="" class="dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
 
-                      <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="dropdown-item"><a class="" href="/profile"><span>Profile</span> <i class="fas fa-user"></i></a></li>
-                        <li class="dropdown-item"><button type="button" class="btn login-btn" data-bs-toggle="modal"
-                          data-bs-target="#logoutModal"><span>Logout</span><i class="fa fa-sign-out-alt"></i></button></li>
-                      </ul>
-                  </div>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-item"><a class="" href="/profile"><span>Profile</span> <i
+                                        class="fas fa-user"></i></a></li>
+                            <li class="dropdown-item"><button type="button" class="btn login-btn" data-bs-toggle="modal"
+                                    data-bs-target="#logoutModal"><span>Logout</span><i
+                                        class="fa fa-sign-out-alt"></i></button></li>
+                        </ul>
+                    </div>
 
                     {% else %}
                     <a class="btn btn-danger login-btn" href="/login">Login</a>
@@ -149,6 +167,8 @@
     <script src="{% static '/bootstrap/js/bootstrap.bundle.js' %} "></script>
     <!-- Owl Carousel Js  -->
     <script src="{% static 'owl_carousel/owlcarousal.min.js' %}"></script>
+    <!-- Wow JS  -->
+    <script src="{% static 'wow/wow.min.js' %}"></script>
 
     <script>
         // Owl Carousel Setting
@@ -172,9 +192,27 @@
             }
         })
     </script>
-{% block customscript %}{% endblock customscript %}
 
-</script>
+
+    {% block customscript %}{% endblock customscript %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            "use strict";
+            // Spinner
+            let spinner = function () {
+                        if ($('#spinner').length > 0) {
+                            $('#spinner').removeClass('show');
+                        }
+                };
+                setInterval(() => {
+                    spinner();
+                }, 500);
+                
+
+            new WOW().init();
+        });
+    </script>
 </body>
 
 </html>

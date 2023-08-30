@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 import requests
 from django.shortcuts import render, redirect
@@ -12,13 +11,11 @@ from django.contrib import messages
 import uuid
 from django.conf import settings
 from django.core.mail import send_mail
-from django.views.decorators.cache import cache_control
-from .recomm3 import LRS
 from urllib.parse import urlparse
+from .recomm3 import LRS
 
 
 # Create your views here.
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home(request):
 
     rec_courses = set()
@@ -58,8 +55,7 @@ def home(request):
 
 def courses(request):
     all_courses = Course.objects.all()
-    mycourses = MyCourse.objects.all()
-
+    all_departments = Department.objects.all()
     popu_courses = []
     # for course in all_courses:
     #     first_lesson = None
@@ -71,9 +67,10 @@ def courses(request):
 
     #     popu_courses.append([course, first_lesson])
 
+
     context = {
         'course_details': map_course_details(all_courses),
-        'mycourses': map_mycourse_details(mycourses),
+        'all_departments':all_departments,
         # 'popu_courses': popu_courses,
     }
     return render(request, 'courses.html', context)
@@ -164,6 +161,7 @@ def queries(request):
     all_queries = Query.objects.all()
     total_queries = len(Query.objects.all())
     total_answers = len(Answer.objects.all())
+    
     queries = []
     for query in all_queries:
         answer_count = len(Answer.objects.filter(query=query))
@@ -173,6 +171,7 @@ def queries(request):
         'queries': queries,
         'total_queries': total_queries,
         'total_answers': total_answers,
+        'all_courses' : Course.objects.all(),
         'type': 'All',
     }
     return render(request, 'queries.html', context)
@@ -704,19 +703,14 @@ def handleLessonReviews(request):
 
         if len(LessonReview.objects.filter(user=user, lesson=lesson)) > 0:
             # update the existing ratings
-            existing_review = LessonReview.objects.get(
-                user=user, lesson=lesson)
-            existing_review.rate = rate 
-            existing_review.save()
-            # update_review = LessonReview(
-            #     id=existing_review.id, user=user, lesson=lesson, rate=rate)
-            # update_review.save()
+            LessonReview.objects.get(user=user, lesson=lesson).delete()
+            
+            LessonReview(user=user, lesson=lesson, rate=rate).save()
             
             # Send Success Message
         else:
             # Add new ratings
-            review = LessonReview(user=user, lesson=lesson, rate=rate)
-            review.save()
+            LessonReview(user=user, lesson=lesson, rate=rate).save()
             # Send Success Message
 
         course = Course.objects.get(course_id=lesson.course.course_id)

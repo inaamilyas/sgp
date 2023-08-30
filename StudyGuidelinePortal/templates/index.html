@@ -25,22 +25,18 @@
 </section>
 
 <!-- Search Box  -->
-<div class="container-fluid p-2">
-
-    <div class="row">
-        <!-- <div class="col-md-4"></div> -->
-        <div class="d-flex align-item-center justify-content-center">
-            <form action="/search/" method="get">
-                <input type="text" placeholder="Search" name="search-query" class="search-input" required>
-                <button type="submit" class="search-btn"> <i class=""></i> Search</button>
-            </form>
-        </div>
+<div class="container-fluid p-2 wow fadeIn">
+    <div class="d-flex align-item-center justify-content-center">
+        <form action="/search/" method="get">
+            <input type="text" placeholder="Search" name="search-query" class="search-input" required>
+            <button type="submit" class="search-btn"> <i class=""></i> Search</button>
+        </form>
     </div>
 </div>
 
 <!-- Recommended lessons -->
 {% if rec_lesson_details %}
-<div class="container-fluid bg-light">
+<div class="container-fluid bg-light wow fadeInUp">
     <section class="container recomm-lessons py-3">
         <h2 class="section-heading">Recommended <span class="text-primary">Lessons</span></h2>
 
@@ -87,7 +83,7 @@
 
 <!-- Recommended Courses -->
 {% if rec_course_details %}
-<div class="container-fluid bg-white">
+<div class="container-fluid bg-white wow fadeInUp">
     <section class="container recomm-courses py-5">
         <h2 class="section-heading">Recommended <span class="text-primary">Courses</span></h2>
 
@@ -106,7 +102,11 @@
                                 <img src="/media/{{course.course_pic}}" alt="">
                             </div>
                             <div class="course-info">
-                                <small class="category">{{course.department.dep_name}}</small>
+                                <div class="dep_list">
+                                    {% for dep in course.department.all %}
+                                    <small class="category">{{dep.dep_name}}</small>
+                                    {% endfor %}
+                                </div>
                                 <h4>{{course.course_name}}</h4>
                                 <div class="course-meta">
                                     <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
@@ -135,7 +135,7 @@
 {% endif %}
 
 <!-- Latest lessons -->
-<div class="container-fluid bg-light">
+<div class="container-fluid bg-light wow fadeInUp">
     <section class="container recomm-lessons py-5">
         <h2 class="section-heading">Latest <span class="text-primary">Lessons</span></h2>
 
@@ -179,7 +179,7 @@
 </div>
 
 <!-- Popular lessons -->
-<div class="container-fluid bg-light">
+<div class="container-fluid bg-light  wow fadeInUp">
     <section class="container recomm-lessons py-3">
         <h2 class="section-heading">Popular <span class="text-primary">Lessons</span></h2>
 

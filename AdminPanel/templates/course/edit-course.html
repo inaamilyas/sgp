@@ -43,34 +43,27 @@
                         <div class="col-12">
                            <div class="form-group">
                               <label>Course Name</label>
-                              <input type="text" class="form-control" required name="course_name" value="{{course.course_name}}">
+                              {{ form.course_name }}
                            </div>
                         </div>
                         <div class="col-12">
                            <div class="form-group">
                               <label>Course Image</label>
-                              <img src="/media/{{course.course_pic}}/" alt="" width="150" height="150">
-                              <input type="file" class="form-control" required name="course_pic" value="{{course.course_pic}}">
+                              {{ form.course_pic }}
                            </div>
                         </div>
                         <div class="col-12">
-                           <div class="form-group">
-                              <label>Department</label>
-                              <select class="form-control" required name="department" id="department">
-                                 <option value="{{course.department.dep_slug}}">{{course.department.dep_name}}</option>
-                                 {% for department in departments %}
-                                 
-                                 <option value="{{department.dep_slug}}">{{department.dep_name}}</option>
-                                 
-                                 {% endfor %}
-                              </select>
-                              
+                           <label>Department</label>
+                           <div class="form-group form-check-inline add-dep-div">
+                              {{ form.department }}
                            </div>
                         </div>
+
                         <div class="col-12">
                            <button type="submit" class="btn btn-primary">Update</button>
                         </div>
                      </div>
+
                   </form>
                </div>
             </div>

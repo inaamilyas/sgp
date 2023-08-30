@@ -1,5 +1,6 @@
+from django.views.decorators.cache import cache_control
 from bs4 import BeautifulSoup
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 import requests
 from StudyGuidelinePortal.models import *
 from django.contrib.auth import authenticate, login, logout
@@ -44,11 +45,12 @@ def handleLogout(request):
     logout(request)
     return redirect('AdminLogin')
 
-from django.views.decorators.cache import cache_control
+
 # @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+
+
 def dashboard(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-        
         total_course = len(Course.objects.all())
         total_lesson = len(Lesson.objects.all())
         total_questions = len(Query.objects.all())
@@ -166,7 +168,7 @@ def departmentDetails(request, department_slug):
 
 def addDepartment(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-        
+
         if request.method == 'POST':
             depForm = DepartmentForm(request.POST)
             if depForm.is_valid():
@@ -203,7 +205,7 @@ def updateDepartment(request, department_slug):
             depForm = DepartmentForm(instance=department)
 
         context = {
-            'department':department,
+            'department': department,
             'depForm': depForm,
             'department_is_active': True,
         }
@@ -254,26 +256,19 @@ def courseDetails(request, course_slug):
 
 def addCourse(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-        departments = Department.objects.all()
         if request.method == 'POST':
-            course_name = request.POST.get('course_name')
-            if 'course_pic' in request.FILES:
-                course_pic = request.FILES['course_pic']
-
-            department_slug = request.POST.get('department')
-            department = Department.objects.get(dep_slug=department_slug)
-
-            newCourse = Course(course_name=course_name,
-                               course_pic=course_pic, department=department)
-            newCourse.save()
-            reloadRecommendation()
-            return redirect('/admin1/courses/')
-
+            form = CourseForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                reloadRecommendation()
+                # Redirect to the course list view
+                return redirect('/admin1/courses/')
+        else:
+            form = CourseForm()
         context = {
-            'departments': departments,
+            'form': form,
             'course_is_active': True,
         }
-
         return render(request, 'course/add-course.html', context)
     else:
         messages.error(request, 'Acess denied. Try again')
@@ -283,29 +278,21 @@ def addCourse(request):
 def updateCourse(request, course_slug):
     if not request.user.is_anonymous and request.user.is_superuser:
         course = Course.objects.get(course_slug=course_slug)
-
         if request.method == 'POST':
-            course_name = request.POST.get('course_name')
-            if 'course_pic' in request.FILES:
-                course_pic = request.FILES['course_pic']
-
-            department_slug = request.POST.get('department')
-            department = Department.objects.get(dep_slug=department_slug)
-
-            updateCourse = Course(course_id=course.course_id, course_name=course_name,
-                                  course_pic=course_pic, department=department)
-
-            updateCourse.save()
-            return redirect('Courses')
-
-        departments = Department.objects.all()
+            form = CourseForm(request.POST, request.FILES, instance=course)
+            if form.is_valid():
+                form.save()
+                reloadRecommendation()
+                # Redirect to the course list view
+                return redirect('/admin1/courses/')
+        else:
+            form = CourseForm(instance=course)
         context = {
-            'departments': departments,
-            'course': course,
+            'form': form,
             'course_is_active': True,
         }
-
         return render(request, 'course/edit-course.html', context)
+
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
@@ -315,6 +302,7 @@ def deleteCourse(request, course_slug):
     if not request.user.is_anonymous and request.user.is_superuser:
         course = Course.objects.get(course_slug=course_slug)
         course.delete()
+        reloadRecommendation()
         return redirect('Courses')
     else:
         messages.error(request, 'Acess denied. Try again')
@@ -348,6 +336,7 @@ def lessonDetails(request, lesson_slug):
             'lesson': lesson,
             'lesson_ratings': lesson_ratings,
             'no_of_ratings': no_of_ratings,
+            'lesson_reviews': LessonReview.objects.filter(lesson=lesson),
             'lesson_is_active': True,
         }
         return render(request, 'lesson/lesson-details.html', context)
@@ -377,7 +366,7 @@ def updateLesson(request, lesson_slug):
 
                 lesson.save()
                 # Lesson(lesson_id=lesson.lesson_id,lesson_title=lesson_title,
-                    #    lesson_desc=lesson_desc, course=course).save()
+                #    lesson_desc=lesson_desc, course=course).save()
                 reloadRecommendation()
                 return redirect('Lessons')
         else:
@@ -421,10 +410,11 @@ def addLesson(request):
                 Lesson(lesson_title=lesson_title,
                        lesson_desc=lesson_desc, course=course, lesson_summary=lesson_summary, lesson_tags=lesson_tags).save()
 
-                newLesson = Lesson.objects.filter(lesson_title=lesson_title).first()
+                newLesson = Lesson.objects.filter(
+                    lesson_title=lesson_title).first()
                 reloadRecommendation()
                 links = scraper(newLesson.lesson_title)
-                return render(request, 'links/view-generated-link.html', {"list_of_links" : links, 'lesson':newLesson})
+                return render(request, 'links/view-generated-link.html', {"list_of_links": links, 'lesson': newLesson})
         else:
             lessonForm = LesssonForm()
 
@@ -436,7 +426,6 @@ def addLesson(request):
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
-    
 
 
 # Queries
@@ -456,11 +445,19 @@ def queries(request):
 def queryDetails(request, query_slug):
     if not request.user.is_anonymous and request.user.is_superuser:
         query = Query.objects.get(query_slug=query_slug)
+        answers = Answer.objects.filter(query=query)
+        ansForm = AnswerForm(request.POST)
+
+        ans_like_count = []
+        for answer in answers:
+            total_likes = len(Like.objects.filter(answer=answer))
+            ans_like_count.append([answer, total_likes])
 
         context = {
             'query': query,
             'queries_is_active': True,
-            
+            'ans_like_count':ans_like_count,
+            'ansForm':ansForm,
         }
         return render(request, 'queries/query-details.html', context)
     else:
@@ -523,7 +520,7 @@ def addQuery(request):
                 course = Course.objects.filter(course_name=course).first()
 
                 Query(query_title=query_title,
-                       query_desc=query_desc, course=course, user=request.user).save()
+                      query_desc=query_desc, course=course, user=request.user).save()
 
                 return redirect('Queries')
         else:
@@ -540,20 +537,69 @@ def addQuery(request):
 
 
 # Answers
-def answers(request):
+def addAnswer(request, query_slug):
     if not request.user.is_anonymous and request.user.is_superuser:
-        answers = Answer.objects.all()
+        query = Query.objects.get(query_slug=query_slug)
+        user = request.user
+        if request.method == 'POST':
+            ansForm = AnswerForm(request.POST)
+            if ansForm.is_valid():
+                ans_desc = ansForm.cleaned_data['ans_desc']
+                Answer(ans_desc=ans_desc, query=query, user=user).save()
+                print('answer is saved')
+                return redirect(f'/admin1/query-details/{query_slug}')
+        else:
+            ansForm = AnswerForm()
+
         context = {
-            'answers': answers,
-            'answer_is_active': True,
+            'ansForm': ansForm,
+            'queries_is_active': True,
         }
-        return render(request, 'answers/answers.html', context)
+        return render(request, 'queries/add-answer.html', context)
+    else:
+        messages.error(request, 'Acess denied. Try again')
+        return redirect('AdminLogin')
+    
+
+def updateAnswer(request, answer_id):
+    if not request.user.is_anonymous and request.user.is_superuser:
+        answer = Answer.objects.get(ans_id=answer_id)
+        if request.method == 'POST':
+            ansForm = AnswerForm(request.POST, instance=answer)
+            if ansForm.is_valid():
+                ans_desc = ansForm.cleaned_data['ans_desc']
+                answer.ans_desc = ans_desc
+                answer.save()
+                return redirect(f'/admin1/query-details/{answer.query.query_slug}')
+        else:
+            ansForm = AnswerForm(instance=answer)
+
+        context = {
+            'ansForm': ansForm,
+        }
+        # Message success
+        return render(request, 'queries/edit-answer.html', context)
+       
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
 
 
-# Similar Links 
+def deleteAnswer(request, answer_id):
+    if not request.user.is_anonymous and request.user.is_superuser:
+        answer = Answer.objects.get(ans_id=answer_id)
+        query_slug = answer.query.query_slug
+
+        answer.delete()
+        # Message success
+        return redirect(f'/admin1/query-details/{query_slug}')
+    else:
+        messages.error(request, 'Acess denied. Try again')
+        return redirect('AdminLogin')
+
+
+
+# Similar Links
 def similarLinks(request):
     if not request.user.is_anonymous and request.user.is_superuser:
         links = SimilarLinks.objects.all()
@@ -572,7 +618,7 @@ def updateLink(request, link_id):
         link = SimilarLinks.objects.get(link_id=link_id)
         if request.method == 'POST':
             link_title = request.POST.get('link_title')
-            link_url= request.POST.get('link_url')
+            link_url = request.POST.get('link_url')
 
             link.link_title = link_title
             link.link_url = link_url
@@ -581,7 +627,7 @@ def updateLink(request, link_id):
             return redirect('SimilarLinks')
 
         context = {
-            'link':link,
+            'link': link,
             'queries_is_active': True,
         }
 
@@ -605,13 +651,13 @@ def deleteLink(request, link_id):
 def addLink(request):
     if not request.user.is_anonymous and request.user.is_superuser:
         if request.method == 'POST':
-            lesson_slug= request.POST.get('lesson_slug')
+            lesson_slug = request.POST.get('lesson_slug')
             lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
             links = scraper(lesson.lesson_title)
-            return render(request, 'links/view-generated-link.html', {"list_of_links" : links, 'lesson':lesson})
+            return render(request, 'links/view-generated-link.html', {"list_of_links": links, 'lesson': lesson})
 
         context = {
-            'lesson_list':Lesson.objects.filter(),
+            'lesson_list': Lesson.objects.filter(),
             'queries_is_active': True,
         }
 
@@ -628,19 +674,18 @@ def saveLinkToDb(request):
         link_title = form_data['link_title']
         link_url = form_data['link_url']
         lesson_slug = form_data['lesson_slug']
-        lesson = Lesson.objects.filter(lesson_slug = lesson_slug).first()
+        lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
 
-        if not SimilarLinks.objects.filter(link_title=link_title ,link_url = link_url):
-            similarLink = SimilarLinks(link_title=link_title, link_url=link_url, lesson=lesson).save()
+        if not SimilarLinks.objects.filter(link_title=link_title, link_url=link_url, lesson=lesson):
+            SimilarLinks(link_title=link_title, link_url=link_url, lesson=lesson).save()
             response_data = {"success": "form data received successfully"}
         else:
             response_data = {"error": "Something went wrong"}
-        
+
         return JsonResponse(response_data)
-    
 
 
-# Search 
+# Search
 def handleMainSearch(request):
     if not request.user.is_anonymous and request.user.is_superuser:
         if request.method == 'GET':
@@ -653,52 +698,65 @@ def handleMainSearch(request):
             answers = []
 
             if len(search_query) >= 30:
-                messages.error(request, f"Can't show results for '{search_query}'" )
+                messages.error(
+                    request, f"Can't show results for '{search_query}'")
             else:
                 if search_for == 'department':
-                    departments = Department.objects.filter(dep_name__icontains=search_query)
-                    
+                    departments = Department.objects.filter(
+                        dep_name__icontains=search_query)
+
                 elif search_for == 'course':
-                    courses = Course.objects.filter(course_name__icontains=search_query)
+                    courses = Course.objects.filter(
+                        course_name__icontains=search_query)
 
                 elif search_for == 'lesson':
-                    lessons = Lesson.objects.filter(lesson_title__icontains=search_query)
+                    lessons = Lesson.objects.filter(
+                        lesson_title__icontains=search_query)
 
                 elif search_for == 'query':
-                    queries = Query.objects.filter(query_title__icontains=search_query)
+                    queries = Query.objects.filter(
+                        query_title__icontains=search_query)
 
                 elif search_for == 'answer':
-                    answers = Answer.objects.filter(ans_desc__icontains=search_query)
+                    answers = Answer.objects.filter(
+                        ans_desc__icontains=search_query)
 
-                else :
-                    departments = Department.objects.filter(dep_name__icontains=search_query)
-                    courses = Course.objects.filter(course_name__icontains=search_query)
-                    lessons = Lesson.objects.filter(lesson_title__icontains=search_query)
-                    queries = Query.objects.filter(query_title__icontains=search_query)
-                    answers = Answer.objects.filter(ans_desc__icontains=search_query)
-               
+                else:
+                    departments = Department.objects.filter(
+                        dep_name__icontains=search_query)
+                    courses = Course.objects.filter(
+                        course_name__icontains=search_query)
+                    lessons = Lesson.objects.filter(
+                        lesson_title__icontains=search_query)
+                    queries = Query.objects.filter(
+                        query_title__icontains=search_query)
+                    answers = Answer.objects.filter(
+                        ans_desc__icontains=search_query)
 
-        context={
-            'search_query' : search_query,
-            'departments':departments,
-            'courses':courses,
-            'lessons':lessons,
-            'queries':queries,
-            'answers':answers,
+        context = {
+            'search_query': search_query,
+            'departments': departments,
+            'courses': courses,
+            'lessons': lessons,
+            'queries': queries,
+            'answers': answers,
         }
         return render(request, 'search-main.html', context)
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
-    
+
+
 # Just a template for new function
 def Template(request):
     if not request.user.is_anonymous and request.user.is_superuser:
-        
+
         return render(request, 'search-main.html')
     else:
         messages.error(request, 'Acess denied. Try again')
         return redirect('AdminLogin')
+
+
 # ========================================
 
 
@@ -760,6 +818,5 @@ def fetchLinks(lesson_title):
         list.append(link_object[index])
 
         linksInfo.append(list)
-    
-    return linksInfo
 
+    return linksInfo

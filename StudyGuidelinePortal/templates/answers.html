@@ -39,13 +39,13 @@
                         </div>
                         {% if request.user.id == query.user.id %}
                         <div>
-                            <a href="/edit-query/{{query.query_slug}}/" class="btn btn-sm bg-success-light mr-2">
+                            <a href="/edit-query/{{query.query_slug}}/" class="btn btn-sm bg-success-light mr-2 wow fadeIn" data-wow-delay="0.5s">
                                 <i class="fas fa-pen"></i>
                             </a>
                             <!-- <a href="/del-query/{{query.query_slug}}/" class="btn btn-sm bg-danger text-white">
                                 <i class="fas fa-trash"></i>
                             </a> -->
-                            <button class="btn btn-sm bg-danger text-white" id="showDelQueryModal" data-delete-query-url="/del-query/{{query.query_slug}}/"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm bg-danger text-white wow fadeIn" id="showDelQueryModal" data-delete-query-url="/del-query/{{query.query_slug}}/" data-wow-delay="0.5s"><i class="fas fa-trash"></i></button>
                         </div>
                         {% endif %}
                         {% comment %} <a href="#" class="btn btn-dark ans-btn">Answer Form</a> {% endcomment %}
@@ -81,7 +81,7 @@
                     <!-- Answer card  -->
                     {% if answers %}
                     {% for answer, total_likes, is_liked in ans_like_count %}
-                    <div class="answers-details-card">
+                    <div class="answers-details-card  wow fadeInUp">
                         <div class="card-top">
                             <div>
                                 <span>{{answer.created_at}}</span>
@@ -106,13 +106,13 @@
                             <!-- <a href="#" class="ans-like-btn">Like</a> -->
                             {% if request.user.id == answer.user.id %}
                             <div>
-                                <a href="/edit-answer/{{answer.ans_id}}/" class="btn btn-sm bg-success-light mr-2">
+                                <a href="/edit-answer/{{answer.ans_id}}/" class="btn btn-sm bg-success-light mr-2 wow fadeIn" data-wow-delay="0.5s">
                                     <i class="fas fa-pen"></i>
                                 </a>
                                 <!-- <a href="/delete-answer/{{answer.ans_id}}/" class="btn btn-sm bg-danger text-white">
                                     <i class="fas fa-trash"></i>
                                 </a> -->
-                                <button class="btn btn-sm bg-danger text-white" id="showDelAndModal" data-delete-ans-url="/delete-answer/{{answer.ans_id}}/"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-sm bg-danger text-white wow fadeIn showDelAndModal" id="showDelAndModal" data-delete-ans-url="/delete-answer/{{answer.ans_id}}/" data-wow-delay="0.5s"><i class="fas fa-trash"></i></button>
                             </div>
                             {% endif %}
                         </div>
@@ -144,7 +144,7 @@
     </div>
 </section>
 
-<section class="container-fluid add-answer" id="add-ans-section">
+<section class="container-fluid add-answer wow fadeIn" id="add-ans-section">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8 py-4">
@@ -235,7 +235,7 @@
 <script>
     $(document).ready(function() {
         // Event handler for the button click
-        $('#showDelAndModal').on('click', function() {
+        $('.showDelAndModal').on('click', function() {
             let deleteUrl = $(this).data('delete-ans-url');
             
             $('.del-ans-btn').attr('href', deleteUrl);

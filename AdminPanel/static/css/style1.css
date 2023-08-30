@@ -349,6 +349,9 @@ table.table td h2.table-avatar {
 table.table td h2 a {
     color: #333;
 }
+table th, table td{
+    font-size: 14px;
+}
 
 .card-table .table td,
 .card-table .table th {
@@ -608,3 +611,72 @@ input[type=password] {
 .actions a.delete-btn:hover {
     color: #bd2130;
 }
+
+.add-dep-input{
+    margin-left: 40px;
+}
+.add-dep-div > div#id_department{
+    /* height: 100px; */
+    /* margin-left: 40px; */
+    display: flex;
+    flex-wrap: wrap;
+}
+.add-dep-div > div#id_department div{
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.answers-details-card {
+    margin-bottom: 8px;
+    padding: 10px 40px;
+    background: #f8f9fa;
+    width: 100%;
+}
+
+.answers-details-card .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 30px;
+    background: #fff;
+}
+
+
+.answers-details-card .card-middle {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    background: #fff;
+}
+
+.card-middle span.ans-desc {
+    padding: 10px;
+    text-align: justify;
+    overflow-wrap: break-word;
+}
+
+.answers-details-card .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background-color: #f8f9fa;
+}
+
+/* .ans-like-btn {
+    border: 1px solid var(--color-black);
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.ans-like-btn:hover {
+    border: 1px solid var(--color-black);
+}
+
+i.like-icon {
+    font-size: 20px;
+}
+
+i.like-icon:hover {
+    color: var(--color-blue);
+} */

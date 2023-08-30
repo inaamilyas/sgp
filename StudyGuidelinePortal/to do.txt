@@ -96,3 +96,30 @@ CDNs
 $(document).ready( function () {
     $('#myTable').DataTable();
 } );
+
+The data i have is 
+lessons(lesson_id, lesson_title,course_name, dep_name, lesson_tags,lesson_summary)
+Ratings(user_id, lesson_id, rate, created_at)
+LessonWatchTime(id, user_id,lesson_id, watch_time, updated_at)
+
+
+
+I have these models in django application and database in mysql. I am using jupyter notebook for creating a user interest based recommendation system. Write a code to get this data into jupyter notebook from Mysql as dataframe. Lesson, Course, Department should me merged
+class Department(models.Model):
+    dep_id = models.AutoField(primary_key=True)
+    dep_name = models.CharField(max_length=400)
+
+class Course(models.Model):
+    course_id = models.AutoField(primary_key=True)
+    course_name = models.CharField(max_length=200)
+    department = models.ManyToManyField(
+        Department, default=None)
+ 
+
+class Lesson(models.Model):
+    lesson_id = models.AutoField(primary_key=True)
+    lesson_title = models.CharField(max_length=200)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    lesson_tags = models.TextField(default="")
+    lesson_summary = models.TextField(default="")
+ 

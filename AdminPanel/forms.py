@@ -12,15 +12,30 @@ class DepartmentForm(forms.ModelForm):
         }
 
 
+# class CourseForm(forms.ModelForm):
+#     class Meta:
+#         model = Course
+#         fields = ['course_name', 'course_pic', 'department']
+
+#         widgets = {
+#             'course_name': forms.TextInput(attrs={'class': 'form-control'}),
+#             # 'course_pic': forms.ImageField(attrs={'class': 'form-control'}),
+#             'department': forms.Select(attrs={'class': 'form-control'}),
+#         }
+
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['course_name', 'course_pic', 'department']
-
+        fields = ('course_name', 'course_pic', 'department')
         widgets = {
-            'course_name': forms.TextInput(attrs={'class': 'form-control'}),
-            # 'course_pic': forms.ImageField(attrs={'class': 'form-control'}),
-            'department': forms.Select(attrs={'class': 'form-control'}),
+            'course_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Course Name'}),
+            'course_pic': forms.FileInput(attrs={'class': 'form-control-file'}),
+            'department': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'course_name': 'Course Name',
+            'course_pic': 'Course Picture',
+            'department': 'Departments',
         }
 
 
@@ -52,7 +67,3 @@ class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ['ans_desc']
-
-        widgets = {
-            'query': forms.Select(attrs={'class': 'form-control'}),
-        }

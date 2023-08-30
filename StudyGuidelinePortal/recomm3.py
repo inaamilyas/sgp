@@ -11,11 +11,11 @@ class LRS:
 
         lessons = Lesson.objects.values('lesson_id', 'lesson_title', 'views')
         ratings =LessonReview.objects.values('id', 'user', 'lesson', 'rate')
-        watchtime =LessonWatchTime.objects.values('user', 'lesson', 'watch_time')
+        watchtime =LessonWatchTime.objects.values('user', 'lesson', 'watch_time','updated_at')
         self.lessonsOrig_df = pd.DataFrame(list(lessons))
         self.ratings_df= pd.DataFrame(list(ratings))
         self.watchtime_df = pd.DataFrame(list(watchtime))
-
+        # print(self.watchtime_df.sort_values(by='updated_at', ascending=False).head(3))
         self.rename_cols()
 
     def load_pkl_file(self):

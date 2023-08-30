@@ -41,21 +41,6 @@ class Course(models.Model):
     course_name = models.CharField(max_length=200)
     course_pic = models.ImageField(
         upload_to='images/course/', default=None, null=True)
-    department = models.ForeignKey(
-        Department, on_delete=models.CASCADE, default=None)
-    # course_pic = models.ImageField(upload_to='StudyGuidelinePortal/static/images/course/')
-    course_slug = AutoSlugField(
-        populate_from='course_name', unique=True, null=True, default=None)
-
-    def __str__(self):
-        return self.course_name
-
-
-class MyCourse(models.Model):
-    course_id = models.AutoField(primary_key=True)
-    course_name = models.CharField(max_length=200)
-    course_pic = models.ImageField(
-        upload_to='images/course/', default=None, null=True)
     department = models.ManyToManyField(
         Department, default=None)
     # course_pic = models.ImageField(upload_to='StudyGuidelinePortal/static/images/course/')
@@ -66,6 +51,7 @@ class MyCourse(models.Model):
         return self.course_name
 
 
+
 class Lesson(models.Model):
     lesson_id = models.AutoField(primary_key=True)
     lesson_title = models.CharField(max_length=200)
@@ -74,7 +60,7 @@ class Lesson(models.Model):
     views = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     lesson_tags = models.TextField(default="")
-    lesson_summary = models.CharField(max_length=500, default="")
+    lesson_summary = models.TextField(default="")
     time = models.DateTimeField(auto_now_add=True)
     lesson_slug = AutoSlugField( populate_from='lesson_title', unique=True, null=True, default=None)
 
@@ -122,7 +108,7 @@ class LessonReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     rate = models.IntegerField(default=0)
-    created_at: models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.id} | {self.user} | {self.lesson} | {self.rate}'

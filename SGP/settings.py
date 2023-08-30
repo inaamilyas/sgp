@@ -4,6 +4,7 @@ Django settings for SGP project.
 
 from pathlib import Path
 from django.contrib import messages
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -119,9 +120,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-# STATICFILES_DIRS = [
-#     BASE_DIR/ 'static',
-# ]
+STATICFILES_DIRS = [
+    # Add the paths to your app-specific static directories
+    os.path.join(BASE_DIR, 'StudyGuidelinePortal', 'static'),
+    os.path.join(BASE_DIR, 'AdminPanel', 'static'),
+]
+
+
+# MEDIA_ROOT = BASE_DIR /'media'
+# MEDIA_URL='/media/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -132,8 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL='Home'
 LOGIN_URL='Login'
 
-MEDIA_ROOT = BASE_DIR /'media'
-MEDIA_URL='/media/'
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -151,3 +161,4 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+

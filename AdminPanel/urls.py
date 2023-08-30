@@ -57,22 +57,18 @@ urlpatterns = [
     path('update-query/<slug:query_slug>',
          updateQuery, name='UpdateQuery'),
     path('delete-query/<slug:query_slug>',
-         deleteQuery, name='deleteQuery'),
+         deleteQuery, name='DeleteQuery'),
 
 
     # Answers
-#     path('answers/', answers, name='Answers'),
-#     path('query-details/<slug:query_slug>',
-#          queryDetails, name='QueryDetails'),
-#     path('add-query/',
-#          addQuery, name='AddQuery'),
-#     path('update-query/<slug:query_slug>',
-#          updateQuery, name='UpdateQuery'),
-#     path('delete-query/<slug:query_slug>',
-#          deleteQuery, name='deleteQuery'),
+    path('add-answer/<slug:query_slug>',addAnswer, name='AddAnswer'),
+    path('update-answer/<int:answer_id>/',
+         updateAnswer, name='UpdateAnswer'),
+    path('delete-answer/<int:answer_id>/',
+         deleteAnswer, name='DeleteAnswer'),
 
 
-    # Answers
+    # Links
     path('similar-links/', similarLinks, name='SimilarLinks'),
 #     path('query-details/<slug:query_slug>',
 #          queryDetails, name='QueryDetails'),
