@@ -56,7 +56,7 @@ def home(request):
 def courses(request):
     all_courses = Course.objects.all()
     all_departments = Department.objects.all()
-    popu_courses = []
+    # popu_courses = []
     # for course in all_courses:
     #     first_lesson = None
     #     # if there is any lesson then get it

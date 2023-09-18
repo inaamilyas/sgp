@@ -114,13 +114,12 @@ class LRS:
         return list_of_lessons
 
 
-    # Function to recommend based on user personal interactions
+    # Recommend based on user personal interactions
     def user_item_based_recomm(self, user_id):
         # Merge watch time and ratings data
         merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=[
                              'user_id', 'lesson_id'])
-        # Filter out interactions where the user ID is not 1 and lessons are also highly watched and rated
-        # also filter based on average and number of ratings and views/watchtime
+        # Filter out interactions where the user ID is not 1 and lessons are also highly watched and rated 
         filtered_merged_df = merged_df[(merged_df['user_id'] != user_id) & (
             merged_df['rating'] >= 3) & (merged_df['watchtime'] >= 3)]
 
@@ -141,19 +140,17 @@ class LRS:
         return recommended_lessons_ids  # returning the set of lessons for recommendations
 
 
-    # Function to make recommendations based on similar users
+    # Recommendations based on similar users
     def user_user_based_recomm(self, user_id):
         # Merge watch time and ratings data
-        merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=[
-                             'user_id', 'lesson_id'])
+        merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=['user_id', 'lesson_id'])
 
         # Filter out lessons based on average watchtime,no of views/watchtime, average ratings and number of ratings
 
         # Define a function to calculate a combined score
         def calculate_combined_score(row):
             # Normalize watch time and rating to [0, 1] range
-            normalized_watchtime = row['watchtime'] / \
-                merged_df['watchtime'].max()
+            normalized_watchtime = row['watchtime'] / merged_df['watchtime'].max()
             # Assuming ratings are on a scale of 0-5
             normalized_rating = row['rating'] / 5
 

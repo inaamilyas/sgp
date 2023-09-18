@@ -111,12 +111,13 @@
                                 <div class="course-meta">
                                     <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
                                     {% if first_lesson %}
-                                    <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link"><i
-                                            class="fa-sharp fa-solid fa-arrow-right"></i>
+                                    <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link">
+                                        <i class="fa-sharp fa-solid fa-arrow-right"></i>
                                     </a>
                                     {% else %}
-                                    <a href="#" class="course-link"><i class="fa-sharp fa-solid fa-arrow-right"></i>
-                                    </a>
+                                    <button disabled class="course-link"><i
+                                        class="fa-sharp fa-solid fa-arrow-right text-center"></i>
+                                    </button>
                                     {% endif %}
 
                                 </div>

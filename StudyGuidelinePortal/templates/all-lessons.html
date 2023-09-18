@@ -39,7 +39,7 @@
                         <span><i class="fa-regular fa-eye"></i><span id="lesson-views-span">{{lesson_details.views}}</span></span>
                     </div>
                 </div>
-                <span class="lesson-desc wow fadeInUp">{{lesson_details.lesson_desc | safe}}</span>
+                <span tabindex="1" class="lesson-desc wow fadeInUp">{{lesson_details.lesson_desc | safe}}</span>
 
                 <!-- Ratings  -->
                 <div class="give-ratings  wow fadeInUp">
@@ -260,5 +260,18 @@
     //         });
     //     } 
     // }, 5000);
+
+   
+</script>
+
+<script>
+     // let lesson_desc_container = document.getElementsByClassName('lesson-desc');
+    // if(lesson_desc_container.hasFocus()){
+    //     console.log('focus');
+    // } else{
+    //     console.log('not focus');
+    // }
+    // console.log(document.activeElement)
+    console.log(($('.lesson-desc').is(':focus')))
 </script>
 {% endblock customscript %}
