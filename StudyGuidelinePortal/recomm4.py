@@ -144,15 +144,16 @@ class LRS:
     def user_user_based_recomm(self, user_id):
         # Merge watch time and ratings data
         merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=['user_id', 'lesson_id'])
-
+        print(merged_df)
+        
         # Filter out lessons based on average watchtime,no of views/watchtime, average ratings and number of ratings
 
         # Define a function to calculate a combined score
         def calculate_combined_score(row):
             # Normalize watch time and rating to [0, 1] range
-            normalized_watchtime = row['watchtime'] / merged_df['watchtime'].max()
+            normalized_watchtime = row['lesson_watch_time'] / merged_df['lesson_watch_time'].max()
             # Assuming ratings are on a scale of 0-5
-            normalized_rating = row['rating'] / 5
+            normalized_rating = row['lesson_rate'] / 5
 
             # Calculate a combined score (average of normalized values)
             combined_score = (normalized_watchtime + normalized_rating) / 2
@@ -194,16 +195,17 @@ class LRS:
         # Recommended items according to the similar user
         def recommend_on_similar_users(target_user_id):
             similar_user_indices = find_similar_users(user_id)
+
             # Get the lessons rated highly by similar users
-            similar_users_rated_lessons = pivot_matrix.iloc[similar_user_indices].apply(
-                lambda row: row >= 0.7)
+            # similar_users_rated_lessons = pivot_matrix.iloc[similar_user_indices].apply(lambda row: row >= 0.7)
+            similar_users_rated_lessons = pivot_matrix.iloc[similar_user_indices].apply(lambda row: row >= 0.4)
 
             # Get the lessons rated by the target user
-            target_user_rated_lessons = pivot_matrix.loc[target_user_id] >= 0.7
+            # target_user_rated_lessons = pivot_matrix.loc[target_user_id] >= 0.7
+            target_user_rated_lessons = pivot_matrix.loc[target_user_id] >= 0.4
 
             # Find lessons highly rated by similar users but not rated by the target user
-            recommended_lessons = (
-                similar_users_rated_lessons & ~target_user_rated_lessons).any()
+            recommended_lessons = (similar_users_rated_lessons & ~target_user_rated_lessons).any()
 
             # Print recommended products
             recommended_lesson_ids = recommended_lessons[recommended_lessons].index.tolist(

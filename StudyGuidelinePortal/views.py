@@ -12,7 +12,8 @@ import uuid
 from django.conf import settings
 from django.core.mail import send_mail
 from urllib.parse import urlparse
-from .recomm3 import LRS
+# from .recomm3 import LRS
+from .recomm4 import LRS
 
 
 # Create your views here.
@@ -25,12 +26,22 @@ def home(request):
     # Recommendation code 
     rec_obj = LRS()
     if not request.user.is_anonymous:
-        # make recommendations 
-        for lesson_id in rec_obj.user_interest_recomm(request.user.id):
-            lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
-            if lesson:
-                rec_lessons.append(lesson)
-                rec_courses.add(lesson.course)
+        my_user = request.user
+        total_user_watchitems = len(LessonWatchTime.objects.filter(user=my_user))
+
+        #Newbie
+        if total_user_watchitems > 1 and total_user_watchitems < 10: 
+            my_recommended_list = rec_obj.user_user_based_recomm(my_user.id)
+        
+        #Experienced user
+        elif total_user_watchitems > 10:
+            print("experienced user")
+
+        #Brand new user
+        else:
+            print("brand new user")
+        
+        
 
     popular_lessons_ids=rec_obj.popular_recomm()
     popu_lessons = []
@@ -39,9 +50,9 @@ def home(request):
             if lesson:
                 popu_lessons.append(lesson)
 
-    # rec_lessons = Lesson.objects.all()
+    rec_lessons = Lesson.objects.all()
     # popu_lessons = Lesson.objects.all()
-    # rec_courses = Course.objects.all()
+    rec_courses = Course.objects.all()
 
 
     context = {
@@ -583,6 +594,7 @@ def handleSignup(request):
         if sendMailAfterVerification(email, auth_token):
             messages.success(
                 request, 'Check your mail and verify your account')
+            
             return redirect('Login')
 
     return render(request, 'register.html')
