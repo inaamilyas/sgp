@@ -11,7 +11,7 @@ from .scraper import scraper
 from django.http import JsonResponse
 
 from .recommendation import reloadRecommendation
-
+from googleapiclient.discovery import build
 
 # Create your views here.
 
@@ -414,7 +414,15 @@ def addLesson(request):
                     lesson_title=lesson_title).first()
                 reloadRecommendation()
                 links = scraper(newLesson.lesson_title)
-                return render(request, 'links/view-generated-link.html', {"list_of_links": links, 'lesson': newLesson})
+                youtube_videos = get_youtube_videos(newLesson.lesson_title)
+
+                context = {
+                    "list_of_links": links,
+                    'youtube_videos':youtube_videos,
+                    'lesson': newLesson
+                }
+    
+                return render(request, 'links/view-generated-link.html', context)
         else:
             lessonForm = LesssonForm()
 
@@ -654,7 +662,13 @@ def addLink(request):
             lesson_slug = request.POST.get('lesson_slug')
             lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
             links = scraper(lesson.lesson_title)
-            return render(request, 'links/view-generated-link.html', {"list_of_links": links, 'lesson': lesson})
+            youtube_videos = get_youtube_videos(lesson.lesson_title)
+            context = {
+                "list_of_links": links, 
+                'youtube_videos':youtube_videos,
+                'lesson': lesson,
+            }
+            return render(request, 'links/view-generated-link.html', context)
 
         context = {
             'lesson_list': Lesson.objects.filter(),
@@ -678,6 +692,22 @@ def saveLinkToDb(request):
 
         if not SimilarLinks.objects.filter(link_title=link_title, link_url=link_url, lesson=lesson):
             SimilarLinks(link_title=link_title, link_url=link_url, lesson=lesson).save()
+            response_data = {"success": "form data received successfully"}
+        else:
+            response_data = {"error": "Something went wrong"}
+
+        return JsonResponse(response_data)
+    
+def saveVideoToDb(request):
+    if request.method == "POST":
+        form_data = request.POST
+        video_title = form_data['video_title']
+        video_id = form_data['video_id']
+        lesson_slug = form_data['lesson_slug']
+        lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
+        print("inside video save")
+        if not YoutubeVideos.objects.filter(video_id=video_id, lesson=lesson):
+            YoutubeVideos(video_title=video_title, video_id=video_id, lesson=lesson).save()
             response_data = {"success": "form data received successfully"}
         else:
             response_data = {"error": "Something went wrong"}
@@ -820,3 +850,33 @@ def fetchLinks(lesson_title):
         linksInfo.append(list)
 
     return linksInfo
+
+
+def get_youtube_videos(lesson_title):
+    # Set up your YouTube API key
+    api_key = 'AIzaSyDJI918prWCbljfoB6AvEpQEeLggLzmv4I'
+
+    # Create a YouTube API client
+    youtube = build('youtube', 'v3', developerKey=api_key)
+
+    # Perform a YouTube search
+    search_response = youtube.search().list(
+        q=lesson_title,
+        type='video',
+        part='id',
+        maxResults=5  # Adjust the number of results as needed
+    ).execute()
+
+    # Extract video IDs from the search results
+    video_ids = [item['id']['videoId'] for item in search_response['items']]
+
+    # Retrieve video titles
+    video_with_titles = []
+    for video_id in video_ids:
+        video_details = youtube.videos().list(
+            part='snippet',
+            id=video_id
+        ).execute()
+        video_with_titles.append([video_id,video_details['items'][0]['snippet']['title']])
+
+    return video_with_titles

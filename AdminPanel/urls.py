@@ -70,13 +70,19 @@ urlpatterns = [
 
     # Links
     path('similar-links/', similarLinks, name='SimilarLinks'),
-#     path('query-details/<slug:query_slug>',
-#          queryDetails, name='QueryDetails'),
     path('add-link/', addLink, name='AddLink'),
     path('update-link/<int:link_id>',
          updateLink, name='UpdateLink'),
     path('delete-link/<int:link_id>',
          deleteLink, name='DeleteLink'),
+
+
+    # Youtube Videos
+#     path('add-youtube-videos/', addVideos, name='AddVideos'),
+#     path('add-link/', addLink, name='AddLink'),
+    
+#     path('delete-link/<int:link_id>',
+#          deleteLink, name='DeleteLink'),
 
 
 #     path('generate-link/<slug:lesson_slug>',
@@ -85,6 +91,8 @@ urlpatterns = [
 
     path('save-link-to-db/',
          saveLinkToDb, name='SaveLinkToDb'),
+    path('save-video-to-db/',
+         saveVideoToDb, name='SaveVideoToDb'),
 
 
 

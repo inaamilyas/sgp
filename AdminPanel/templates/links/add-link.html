@@ -8,11 +8,11 @@
       <div class="page-header">
          <div class="row align-items-center">
             <div class="col">
-               <h3 class="page-title">Add New Link</h3>
+               <h3 class="page-title">Add Links & videos</h3>
                <ul class="breadcrumb">
                   <li class="breadcrumb-item"><a href="{% url 'Dashboard' %}">Dashboard</a></li>
-                  <li class="breadcrumb-item"><a href="{% url 'Queries' %}">Links</a></li>
-                  <li class="breadcrumb-item active">Add Link</li>
+                  <!-- <li class="breadcrumb-item"><a href="{% url 'Queries' %}">Links & Videos</a></li> -->
+                  <li class="breadcrumb-item active">Add Links & Videos</li>
                </ul>
             </div>
             <div class="col-auto text-right float-right ml-auto">
@@ -73,7 +73,7 @@
                <div class="card-body">
                   <form method="post" enctype="multipart/form-data" class="px-5" method="get">
                      <div class="col-12">
-                        <h5 class="form-title"><span>Generate Links</span></h5>
+                        <h5 class="form-title"><span>Get Links & Videos</span></h5>
                      </div>
                      {% csrf_token %}
                      <div class="col-12">
@@ -87,7 +87,7 @@
                         </div>
                      </div>
                      <div class="col-12">
-                        <button type="submit" class="btn btn-primary">Generate</button>
+                        <button type="submit" class="btn btn-primary">Get</button>
                      </div>
                   </form>
                </div>

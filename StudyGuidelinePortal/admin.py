@@ -12,6 +12,7 @@ admin.site.register(Like)
 admin.site.register(Profile)
 admin.site.register(Department)
 admin.site.register(LessonWatchTime)
+admin.site.register(YoutubeVideos)
 
 
 # @admin.register(Review)

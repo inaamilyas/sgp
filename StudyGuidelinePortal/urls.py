@@ -27,6 +27,7 @@ urlpatterns = [
     path('edit-answer/<int:answer_id>/', editAnswer, name='EditAnswer'),
     path('delete-answer/<int:answer_id>/', delAnswer, name='DelAnswer'),
     path('sort-answer/', sortAnswer, name='SortAnswer'),
+    path('get-geneated-answer/', getGeneratedAnswer, name='GetGeneratedAnswer'),
 
 
     path('search/', handleSearch, name='Search'),
@@ -47,6 +48,8 @@ urlpatterns = [
     path('ans-like/', ansLike, name='AnsLike'),
 
     path('calc-lesson-watch-time/<slug:lesson_slug>/<int:watch_time>/', calcLessonWatchTime, name='CalcLessonWatchTime'),
+
+    path('youtube-videos/', search_youtube_videos)
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -15,6 +15,9 @@ from urllib.parse import urlparse
 # from .recomm3 import LRS
 from .recomm4 import LRS
 
+import openai
+from googleapiclient.discovery import build
+
 
 # Create your views here.
 def home(request):
@@ -37,7 +40,7 @@ def home(request):
         elif total_user_watchitems > 10:
             print("experienced user")
 
-        #Brand new user
+        #Brand new sssuser
         else:
             print("brand new user")
         
@@ -138,6 +141,11 @@ def courseLesson(request, course_name, lesson_name):
             if lesson:
                 similar_lessons.append(lesson)
 
+    # Youtube Videos 
+    youtube_videos = YoutubeVideos.objects.filter(lesson_id = lesson_details.lesson_id)
+    # first_video
+    # if len(youtube_videos)>0:
+    #     first_video = youtube_videos[0]
 
     # Latest lessons (- is used to reverse the order)
     latest_lessons = Lesson.objects.all().order_by('-time')[:6]
@@ -161,6 +169,8 @@ def courseLesson(request, course_name, lesson_name):
         'prev_lesson': prev_lesson,
         'next_lesson': next_lesson,
         'similar_lessons_details': map_lesson_details(similar_lessons),
+        'youtube_videos':youtube_videos,
+        # 'first_video': first_video,
         'latest_lessons_details': latest_lessons,
         'website_info': website_info,
     }
@@ -381,6 +391,29 @@ def delAnswer(request, answer_id):
     # Message success
     return redirect(f'/query/{query_slug}/')
 
+def getGeneratedAnswer(request):
+
+    # Replace 'YOUR_API_KEY' with your actual OpenAI API key
+    # openai.api_key = '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'
+    
+    # Your input prompt to ChatGPT
+    # user_input = "Who is Hazrat Myhammad"
+
+    # Make a request to ChatGPT
+    # response = openai.Completion.create(
+    #     engine="davinci",  # Choose the ChatGPT engine you want to use
+    #     prompt=user_input,
+    #     # max_tokens=50  # Adjust the response length as needed
+    # )
+
+    # Extract the generated response from the API response
+    # generated_answer = response.choices[0].text.strip()
+
+    generated_answer = 'Extract the generated response from the API response'
+    context = {
+        'generated_answer':generated_answer,
+    }
+    return JsonResponse(context)
 
 @login_required
 def ansLike(request):
@@ -798,6 +831,41 @@ def about(request):
 def handle404Error(request, exception):
     return render(request, '404.html')
 
+
+def search_youtube_videos(request):
+    # Set up your YouTube API key
+    api_key = 'AIzaSyDJI918prWCbljfoB6AvEpQEeLggLzmv4I'
+
+    # Create a YouTube API client
+    youtube = build('youtube', 'v3', developerKey=api_key)
+
+    query = "What is ethics"
+    # Perform a YouTube search
+    search_response = youtube.search().list(
+        q=query,  # Your search query (related to the topic)
+        type='video',
+        part='id',
+        maxResults=10  # Adjust the number of results as needed
+    ).execute()
+
+    # Extract video IDs from the search results
+    video_ids = [item['id']['videoId'] for item in search_response['items']]
+    print(video_ids)
+
+    # Retrieve video titles
+    video_with_titles = []
+    for video_id in video_ids:
+        video_details = youtube.videos().list(
+            part='snippet',
+            id=video_id
+        ).execute()
+        video_with_titles.append([video_id,video_details['items'][0]['snippet']['title']])
+
+
+    # Pass the video IDs to the template
+    context = {'video_with_titles': video_with_titles}
+
+    return render(request, 'youtube_videos.html', context)
 # ==============================================
 
 

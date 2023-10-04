@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Videos</title>
+</head>
+<body>
+    <h1>YouTube Videos</h1>
+    <div>
+        {% for video_id, video_title in video_with_titles %}
+            <h1>{{video_title}}</h1>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+        {% endfor %}
+    </div>
+</body>
+</html>

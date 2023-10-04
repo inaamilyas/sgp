@@ -9,7 +9,7 @@
 <div class="container-fluid">
 
     <!-- Content and Sidebar -->
-    <div class="row">
+    <div class="row" id="lesson-content-main">
         <div class="col-md-3 p-0 wow fadeInLeft">
             <button class="menu-btn-lessons" id="side-menu-btn">Menu</button>
             <div class="lessons" id="lesson-sidebar">
@@ -106,6 +106,7 @@
     </div>
 
     <hr>
+    
     <!-- Similar lessons  -->
     <section class="container recomm-lessons py-3">
         <h2 class="section-heading">Similar Lessons</h2>
@@ -143,42 +144,90 @@
         </div>
     </section>
 
+    
+
+    <!-- Videos -->
+    {% if youtube_videos %}
+    <hr>
+    <div class="container-fluid">
+        <h2 class="section-heading">Video Tutorials</h2>
+        <div class="row video-container">
+            <div class="col-md-4 list-group border-bottom p-0">
+                <div class="video-sidebar">
+                    <li class="list-group-item list-group-item-action active py-2 lh-tight">
+                        <div class="w-100">
+                            <strong class="mb-1">Youtube Tutorials</strong>
+                        </div>
+                    </li>
+                    {% for video in youtube_videos %}
+                    <li class="list-group-item list-group-item-action py-1 lh-tight sidebar-item"
+                        onclick="loadVideo('{{video.video_id}}', '{{video.video_title}}')">
+                        <div class="d-flex flex-column">
+                            <img src="https://img.youtube.com/vi/{{video.video_id}}/default.jpg" alt="{{video.video_title}}">
+                            <strong class="mb-1">{{video.video_title}}</strong>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </div>
+            </div>
+        
+            <div class="col-md-8">
+                <div class="player-container" id="player-container" tabindex="0">
+                    {% with youtube_videos|first as first_video %}
+                    <iframe class="" id="video-player" src="https://www.youtube.com/embed/{{first_video.video_id}}"
+                        frameborder="0" allowfullscreen></iframe>
+                    <h3 id="video-title">{{first_video.video_title}}</h3>
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+
 </div>
 
 <!-- Links Section  -->
 <hr>
 <section class="container-fluid links-section">
+    <h2 class="mb-4 text-center">Want to read more! <span class="blue text-primary">Check out these useful
+        links</span>
+</h2>
     <div class="row">
 
-        <div class="col-md-3 lastest-lessons-sidebar  wow fadeInLeft">
-            <h3 class="text-center p-2">Latest Lessons</h3>
-            <ul class="latest-lessons">
+        <div class="col-md-3 list-group border-bottom shadow p-0">
+                <a href="#" class="list-group-item list-group-item-action active py-2 lh-tight" aria-current="true">
+                  <div class="w-100">
+                    <strong class="mb-1">Latest Lessons</strong>
+                  </div>
+                </a>
                 {% for lesson in latest_lessons_details %}
-                <li class="lesson-item">
-                    <h5><a href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">{{lesson.lesson_title}}</a></h5>
-                    <!-- <span class="lines-2 lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span> -->
-                </li>
+                <a href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}" class="list-group-item list-group-item-action py-1 lh-tight">
+                  <div class="">
+                    <strong class="mb-1">{{lesson.lesson_title}}</strong>
+                  </div>
+                  <div class="col-12 mb-1 small">Some placeholder content in a paragraph below the heading and date.</div>
+                </a>
                 {% endfor %}
-
-            </ul>
         </div>
 
         <div class="col-md-9 links-container px-5">
-            <h2 class="mb-4 text-center">Want to read more! <span class="blue text-primary">Check out these useful
-                    links</span>
-            </h2>
-            <div class="row wow fadeInUp">
+            <div class="row shadow wow fadeInUp">
                 <!-- Link card  -->
                 {% for link, web_name in website_info %}
-                <div class="col-md-10 mb-3">
-                    <div class="card-body link-card">
-                        <h5 class="card-title link-title"><a href="{{link.link_url}}" target="_blank">{{link.link_title}}</a>
-                        </h5>
-                        <div class="link-info">
-                            <span class="btn btn-light">{{web_name}}</span>
-                            <span class="btn btn-light">{{link.lesson.lesson_title}}</span>
+                <div class="col-md-12 mb-3">
+                    <a href="{{link.link_url}}" target="_blank">
+                        <div class="card-body link-card">
+                            <!-- <h5 class="card-title link-title"><a href="{{link.link_url}}" target="_blank">{{link.link_title}}</a> -->
+                            <h5 class="card-title link-title">{{link.link_title}}
+                            </h5>
+                            <div class="link-info">
+                                <span class="btn btn-light">{{web_name}}</span>
+                                <span class="btn btn-light">{{link.lesson.lesson_title}}</span>
+                            </div>
+                
                         </div>
-                    </div>
+                    </a>
                 </div>
                 {% endfor %}
 
@@ -187,6 +236,7 @@
     </div>
 </section>
 {% endblock content %}
+
 
 {% block script %}
 <script>
@@ -217,61 +267,78 @@
 {% endblock script %}
 
 {% block customscript %}
+<!-- JavaScript to calculate views -->
 <script src="{% static '/js/countLessonViews.js' %}"></script>
 
+<!-- JavaScript to calculate watchtime of user -->
 <script>
-    // calc-lesson-watch-time/<slug:lesson_slug>/
     let userLogged = true;
-    let watch_time = 0; 
+    let watch_time = 0;
+    let timerInterval;
 
-    // Timer to count the watchtime
-    setInterval(()=>{
-        watch_time=watch_time+1;
-    }, 1000);
+    // Function to be executed when the div becomes visible
+    function handleIntersection(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // The div is now visible in the viewport
+                // console.log("The div is visible");
 
-    // Making ajax call to send request to the server 
-    window.addEventListener('beforeunload', ()=>{
-        $.ajax({
-                type: 'GET',
-                url: `/calc-lesson-watch-time/${lesson_details_slug}/${watch_time}/`,
-                success: function (response) {
-                    console.log('success', response);
-                },
-                error: function (error) {
-                    console.log('error', error)
-                },
-            });
+                // Start the timer if it's not already running
+                if (!timerInterval) {
+                    timerInterval = setInterval(() => {
+                        watch_time = watch_time + 1;
+                        // console.log(watch_time);
+                    }, 1000);
+                }
+            } else {
+                // console.log("The div is not visible");
+
+                // Stop the timer if it's running
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }
+        });
+    }
+
+    // Create an Intersection Observer
+    const observer = new IntersectionObserver(handleIntersection, {
+        root: null, // Use the viewport as the root
+        rootMargin: '0px', // No margin
+        threshold: 0.02 // Trigger when at least 2% of the div is visible
     });
 
-    // setInterval(()=>{
-    //     if (userLogged) {
-    //         watch_time=watch_time+5;
-    //         $.ajax({
-    //             type: 'GET',
-    //             url: `/calc-lesson-watch-time/${lesson_details_slug}/${watch_time}/`,
-    //             success: function (response) {
-    //                 console.log('success', response);
-    //                 console.log('watchTime', watch_time);
-    //                 userLogged=response.userLogged;
-    //             },
-    //             error: function (error) {
-    //                 console.log('error', error)
-    //             },
-    //         });
-    //     } 
-    // }, 5000);
+    // Observe the target div
+    const target = document.getElementById('lesson-content-main');
+    observer.observe(target);
 
-   
+
+    // Making ajax call to send request to the server 
+    window.addEventListener('beforeunload', () => {
+        $.ajax({
+            type: 'GET',
+            url: `/calc-lesson-watch-time/${lesson_details_slug}/${watch_time}/`,
+            success: function (response) {
+                console.log('success', response);
+            },
+            error: function (error) {
+                console.log('error', error)
+            },
+        });
+    });
 </script>
 
+<!-- JavaScript to load a video into the player -->
 <script>
-     // let lesson_desc_container = document.getElementsByClassName('lesson-desc');
-    // if(lesson_desc_container.hasFocus()){
-    //     console.log('focus');
-    // } else{
-    //     console.log('not focus');
-    // }
-    // console.log(document.activeElement)
-    console.log(($('.lesson-desc').is(':focus')))
+    
+    function loadVideo(videoId, videoTitle) {
+        // Construct the video URL
+        var videoUrl = 'https://www.youtube.com/embed/' + videoId;
+
+        // // Set the src attribute of the iframe to load the new video
+        $('#video-player').attr('src', videoUrl);
+        $('#video-title').html(videoTitle);
+    }
 </script>
 {% endblock customscript %}

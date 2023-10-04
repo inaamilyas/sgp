@@ -102,3 +102,9 @@ What if there is a new user which has no previous history
 Play with the filtered formula to get results (user-user recommendations)
 similar_users_rated_lessons = pivot_matrix.iloc[similar_user_indices].apply(lambda row: row >= 0.7)
 target_user_rated_lessons = pivot_matrix.loc[target_user_id] >= 0.7
+
+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 ApiKeyChat
+AIzaSyDJI918prWCbljfoB6AvEpQEeLggLzmv4I google console Api
+
+
+

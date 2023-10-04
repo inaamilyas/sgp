@@ -9,14 +9,14 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Generated Links</h3>
+                    <h3 class="page-title">Links and videos</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin1">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Generated Links</li>
+                        <li class="breadcrumb-item active">Links and videos</li>
                     </ul>
                 </div>
                 <div class="col-auto text-right float-right ml-auto">
-                    <a href=" {% url 'AddLesson' %} " class="btn btn-primary">Add Lesson <span class="fa fa-plus
+                    <a href=" {% url 'AddLesson' %} " class="btn btn-primary">Add Lesson<span class="fa fa-plus
                              ml-1"></span></a>
                  </div>
             </div>
@@ -37,7 +37,7 @@
                                 {% for index, title, link in list_of_links %}
                                 <tr>
                                     <td>
-                                        <form method="post" id="link-form-{{index}}" method="post">
+                                        <form class="link-form" method="post" id="link-form-{{index}}" method="post">
                                             {% csrf_token %}
                                             <div>
                                                 <label for="link_title">
@@ -66,8 +66,42 @@
                     </div>
                 </div>
             </div>
+           
         </div>
 
+        <div class="row">
+            {% for video_id, video_title in youtube_videos %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <form class="video-form" method="post" id="video-form-{{ forloop.counter }}" method="post">
+                            {% csrf_token %}
+                            <div class="video-card">
+                                <!-- Embedded video player -->
+                                <iframe class="embed-responsive-item" id="video-player"
+                                    src="https://www.youtube.com/embed/{{video_id}}" frameborder="0"
+                                    allowfullscreen></iframe>
+                                <h5>{{video_title}}</h5>
+                            </div>
+
+                            <input type="hidden" name="video_id" id="" value="{{video_id}}">
+                            <input type="hidden" name="video_title" id="" value="{{video_title}}">
+                            <input type="hidden" name="lesson_slug" id="" value="{{lesson.lesson_slug}}">
+
+                            <div>
+                                <!-- <label for="link_url"></label>
+                                <input type="hidden" name="link_url" id="" value=""> -->
+                                <button type="submit" id="video-submit-btn-{{ forloop.counter }}"
+                                    class="btn btn-primary float-right">Add</button>
+                                <p id="video-success-p-{{ forloop.counter }}" class="btn btn-success float-right" style="display: none;">
+                                    Added</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
@@ -77,18 +111,55 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const forms = document.querySelectorAll('form');
+        const forms = document.querySelectorAll('.link-form');
+
+        forms.forEach((form, index) => {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                let success_p = document.getElementById(`success-p-${index}`);
+                let submit_btn = document.getElementById(`submit-btn-${index}`);
+                submit_btn.innerText = "Adding...";
+                const formData = new FormData(form);
+
+                fetch("/admin1/save-link-to-db/", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // console.log("response from Django : ", data);
+                        submit_btn.style.display = "none";
+                        if(data.success){
+                            success_p.style.display = "block";
+                        } else{
+                            success_p.style.display = "block";
+                            success_p.classList.add('btn-danger')
+                            success_p.innerText='Already Exist' 
+                        }
+                        
+                    })
+                    .catch(error => {
+                        console.log('error : ', error);
+                        button.innerText = "Try Again";
+                    })
+            })
+        })
+    })
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const forms = document.querySelectorAll('.video-form');
 
         forms.forEach((form, index) => {
 
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
-                let success_p = document.getElementById(`success-p-${index-1}`);
-                let submit_btn = document.getElementById(`submit-btn-${index-1}`);
+                let success_p = document.getElementById(`video-success-p-${index+1}`);
+                let submit_btn = document.getElementById(`video-submit-btn-${index+1}`);
                 submit_btn.innerText = "Adding...";
                 const formData = new FormData(form);
-
-                fetch("/admin1/save-link-to-db/", {
+                fetch("/admin1/save-video-to-db/", {
                     method: "POST",
                     body: formData
                 })

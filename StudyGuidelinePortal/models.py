@@ -66,6 +66,16 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.lesson_title
+    
+
+class YoutubeVideos(models.Model):
+    video_id = models.TextField()
+    video_title=models.TextField()
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return  self.video_title + " - " + self.lesson.lesson_title
 
 
 class Query(models.Model):
