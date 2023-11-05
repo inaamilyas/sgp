@@ -135,6 +135,18 @@ h2.section-heading::after {
 /* Lesson card  */
 .lesson-card {
     padding: 10px;
+    transition: all 0.3s ease-in;
+}
+a.lesson-card-link{
+    text-decoration: none; 
+    color: var(--color-black);
+}
+.lesson-card:hover{
+    transform: scale(1.025);
+}
+.lesson-card:hover.lesson-card h4{
+    color: var(--color-blue);
+    transition: all 0.3s ease-in;
 }
 
 .lesson-card h4 {
@@ -769,7 +781,7 @@ h5.card-title{
 .login-right {
     min-height: 100vh;
     max-height: fit-content;
-    background-image: linear-gradient(rgba(13, 110, 253, 0.5), rgba(13, 110, 253, 0.5)), url("../images/1.jpg");
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(13, 110, 253, 0.5)), url("../images/login.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     display: flex;
@@ -885,7 +897,7 @@ h5.card-title{
 .signup-right {
     min-height: 100vh;
     max-height: fit-content;
-    background-image: linear-gradient(rgba(13, 110, 253, 0.5), rgba(13, 110, 253, 0.5)), url("../images/1.jpg");
+    background-image: linear-gradient(rgb(0 0 0 / 50%), rgba(13, 110, 253, 0.5)), url(../images/register.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     display: flex;
@@ -897,7 +909,7 @@ h5.card-title{
 .login-right .right-content {
     width: 40%;
     padding: 10px 40px;
-    background-color: var(--color-white);
+    background-color: #ffffffa1;
     min-height: 90vh;
     max-height: fit-content;
     border-radius: 5px;
@@ -907,6 +919,9 @@ h5.card-title{
     width: 100%;
     text-align: center;
     color: var(--color-blue);
+    font-weight: bold;
+    letter-spacing: 3px;
+    font-size: 31px;
 }
 
 .signup-form label.label,

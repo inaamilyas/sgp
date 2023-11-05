@@ -1,5 +1,5 @@
 # Reload Recommendation System 
-from StudyGuidelinePortal.models import Lesson,Course,Department
+from StudyGuidelinePortal.models import Lesson,Course
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
@@ -36,7 +36,7 @@ def reloadRecommendation():
     lessons['lesson_summary'] =lessons['lesson_summary'].apply(lambda x:x.split())
     lessons['lesson_tags'] =lessons['lesson_tags'].apply(lambda x:x.split(","))
     lessons['course_name'] = lessons['course_name'].apply(lambda x: x.split(","))
-    lessons['dep_name'] = lessons['dep_name'].apply(lambda x: x.split(","))
+    # lessons['dep_name'] = lessons['dep_name'].apply(lambda x: x.split(","))
 
     # Removing spaces from course_name and dep_name
     lessons['dep_name']=lessons['dep_name'].apply(lambda x:[i.replace(" ", "") for i in x])

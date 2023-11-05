@@ -44,50 +44,38 @@ class LRS:
 
     # Popularity Based Recommendations
     def popular_recomm(self):
-        lesson_views_df = self.lessonsOrig_df[[
-            'lesson_id', 'lesson_title', 'lesson_views']]
-        lesson_watchtime_df = self.watchtime_df[[
-            'lesson_watch_time', 'lesson_id']]
-        lesson_ratings_df = self.ratings_df[[
-            'lesson_rating_id', 'lesson_rate', 'lesson_id']]
+        lesson_views_df = self.lessonsOrig_df[['lesson_id', 'lesson_title', 'lesson_views']]
+        lesson_watchtime_df = self.watchtime_df[['lesson_watch_time', 'lesson_id']]
+        lesson_ratings_df = self.ratings_df[['lesson_rating_id', 'lesson_rate', 'lesson_id']]
 
         # average rating on each lesson
         avg_rating_df = lesson_ratings_df.groupby('lesson_id').mean()[
             'lesson_rate'].reset_index()
-        avg_rating_df.rename(
-            columns={'lesson_rate': 'avg_rating'}, inplace=True)
+        avg_rating_df.rename(columns={'lesson_rate': 'avg_rating'}, inplace=True)
 
         # number of ratings on each lesson
-        num_rating_df = lesson_ratings_df.groupby('lesson_id').count()[
-            'lesson_rate'].reset_index()
-        num_rating_df.rename(
-            columns={'lesson_rate': 'num_rating'}, inplace=True)
+        num_rating_df = lesson_ratings_df.groupby('lesson_id').count()['lesson_rate'].reset_index()
+        num_rating_df.rename(columns={'lesson_rate': 'num_rating'}, inplace=True)
 
         final_ratings_df = avg_rating_df.merge(num_rating_df, on='lesson_id')
 
         # total watchtime on each lesson
-        total_watch_time_df = lesson_watchtime_df.groupby(
-            'lesson_id').sum()['lesson_watch_time'].reset_index()
-        total_watch_time_df.rename(
-            columns={'lesson_watch_time': 'total_watch_time'}, inplace=True)
+        total_watch_time_df = lesson_watchtime_df.groupby('lesson_id').sum()['lesson_watch_time'].reset_index()
+        total_watch_time_df.rename(columns={'lesson_watch_time': 'total_watch_time'}, inplace=True)
 
         # Merging lessons with ratings df and watchtime df
-        lesson_with_ratings = pd.merge(
-            lesson_views_df, final_ratings_df, on='lesson_id', how='left')
-        lesson_info_df = pd.merge(
-            lesson_with_ratings, total_watch_time_df, on='lesson_id', how='left')
+        lesson_with_ratings = pd.merge(lesson_views_df, final_ratings_df, on='lesson_id', how='left')
+        lesson_info_df = pd.merge(lesson_with_ratings, total_watch_time_df, on='lesson_id', how='left')
         lesson_info_df.fillna(0, inplace=True)
 
         def calculate_popularity_score(lesson_views, avg_rating, num_rating, total_watch_time, w1=1, w2=2, w3=1/60):
             return (w1 * lesson_views) + (w2 * avg_rating * num_rating) + (w3 * total_watch_time)
 
         # Calculate popularity score for each lesson
-        lesson_info_df['popularity_score'] = calculate_popularity_score(
-            lesson_info_df['lesson_views'], lesson_info_df['avg_rating'], lesson_info_df['num_rating'], lesson_info_df['total_watch_time'])
+        lesson_info_df['popularity_score'] = calculate_popularity_score(lesson_info_df['lesson_views'], lesson_info_df['avg_rating'], lesson_info_df['num_rating'], lesson_info_df['total_watch_time'])
 
         # Rank lessons based on popularity score
-        lesson_info_df = lesson_info_df.sort_values(
-            by='popularity_score', ascending=False)[0:10]
+        lesson_info_df = lesson_info_df.sort_values(by='popularity_score', ascending=False)[0:10]
 
         # function to return popular lessons
         def pupular_lessons():
@@ -117,15 +105,13 @@ class LRS:
     # Recommend based on user personal interactions
     def user_item_based_recomm(self, user_id):
         # Merge watch time and ratings data
-        merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=[
-                             'user_id', 'lesson_id'])
-        # Filter out interactions where the user ID is not 1 and lessons are also highly watched and rated 
-        filtered_merged_df = merged_df[(merged_df['user_id'] != user_id) & (
-            merged_df['rating'] >= 3) & (merged_df['watchtime'] >= 3)]
+        merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=['user_id', 'lesson_id'])
+        
+        # Filter Highly Watched and Rated Interactions (For All Users Except the Target User)
+        filtered_merged_df = merged_df[(merged_df['user_id'] != user_id) & (merged_df['lesson_rate'] >= 3) & (merged_df['lesson_watch_time'] >= 3)]
 
-        # Filter out interactions where the user ID is 1 and lessons are also highly watched and rated
-        target_user_interactions_df = merged_df[(merged_df['user_id'] == user_id) & (
-            merged_df['rating'] >= 3) & (merged_df['watchtime'] >= 3)]
+        # Filter Highly Watched and Rated Interactions (For Target User)
+        target_user_interactions_df = merged_df[(merged_df['user_id'] == user_id) & (merged_df['lesson_rate'] >= 3) & (merged_df['lesson_watch_time'] >= 3)]
 
         recommended_lessons_ids = set()
         for lesson_id in target_user_interactions_df['lesson_id'].tolist():
@@ -137,14 +123,13 @@ class LRS:
                 if lesson_id in filtered_merged_df['lesson_id'].values:
                     recommended_lessons_ids.add(lesson_id)
 
-        return recommended_lessons_ids  # returning the set of lessons for recommendations
+        return list(recommended_lessons_ids)  # returning the list of lessons for recommendations
 
 
     # Recommendations based on similar users
     def user_user_based_recomm(self, user_id):
         # Merge watch time and ratings data
         merged_df = pd.merge(self.watchtime_df, self.ratings_df, on=['user_id', 'lesson_id'])
-        print(merged_df)
         
         # Filter out lessons based on average watchtime,no of views/watchtime, average ratings and number of ratings
 
@@ -160,12 +145,10 @@ class LRS:
             return combined_score
 
         # Apply the function to calculate combined scores
-        merged_df['combined_score'] = merged_df.apply(
-            calculate_combined_score, axis=1)
+        merged_df['combined_score'] = merged_df.apply(calculate_combined_score, axis=1)
 
         # Making item-user matrix
-        pivot_matrix = merged_df.pivot_table(
-            index='user_id', columns='lesson_id', values='combined_score').fillna(0)
+        pivot_matrix = merged_df.pivot_table(index='user_id', columns='lesson_id', values='combined_score').fillna(0)
 
         user_similarity = cosine_similarity(pivot_matrix)
 
@@ -187,8 +170,7 @@ class LRS:
             for similar_user_index in similar_user_indices:
                 similar_user_id = user_ids[similar_user_index]
                 similarity_score = similarities_to_target[similar_user_index]
-                print(
-                    f"Similar User ID: {similar_user_id}, Similarity Score: {similarity_score}")
+                # print(f"Similar User ID: {similar_user_id}, Similarity Score: {similarity_score}")
 
             return similar_user_indices
 
@@ -210,7 +192,7 @@ class LRS:
             # Print recommended products
             recommended_lesson_ids = recommended_lessons[recommended_lessons].index.tolist(
             )
-            print("Recommended Lesson IDs:", recommended_lesson_ids)
+            # print("Recommended Lesson IDs:", recommended_lesson_ids)
             return recommended_lesson_ids
 
         return recommend_on_similar_users(user_id)

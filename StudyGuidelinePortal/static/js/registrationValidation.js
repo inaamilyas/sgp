@@ -34,7 +34,7 @@ const isEmail = (emailVal) => {
 // Checking that given string only contains letters/characters 
 function containsCharacters(text) {
     // Regualar Expression which have only letters
-    let letters = /^[A-Za-z]+$/;
+    let letters = /^[A-Za-z\s]+$/;
 
     // Matching the given text with regular expression 
     if (text.match(letters)) {

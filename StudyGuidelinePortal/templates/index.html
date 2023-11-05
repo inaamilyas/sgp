@@ -9,10 +9,11 @@
     <div class="row">
         <div class="col-6 header-left">
             <div class="header-left-content">
-                <h1>An Investment in <span>Knowledge</span><br>Pays the Best Interest</h1>
-                <p>Embark on a journey of knowledge and growth at Study Guideline Portal. Your one-stop destination for
+                <h1>The Purpose of Education is to Replace an <span>Empty Mind</span> with an <span>Open One</span> </h1>
+                <!-- <h1>An Investment in <span>Knowledge</span><br>Pays the Best Interest</h1> -->
+                <!-- <p>Embark on a journey of knowledge and growth at Study Guideline Portal. Your one-stop destination for
                     high-quality online courses. Start learning today!
-                </p>
+                </p> -->
                 <a href="/courses" class="btn btn-primary">Checkout Our Courses</a>
 
             </div>
@@ -51,25 +52,27 @@
                     {% for lesson, avg_rating in rec_lesson_details %}
 
                     <div class="item mb-4">
-                        <div class="card lesson-card shadow">
-                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
-                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
-
-                            <div class="lesson-meta">
-                                <p>{{lesson.course.course_name}}</p>
-
-                                <div>
-                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
-                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
-
-                                    <span style="text-align: center;"><a class="view-lesson"
-                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
-                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
-                                    </span>
+                        <a class="lesson-card-link" href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">
+                            <div class="card lesson-card shadow">
+                                <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                                <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+                                <div class="lesson-meta">
+                                    <p>{{lesson.course.course_name}}</p>
+    
+                                    <div>
+                                        <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                        <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+    
+                                        <!-- <span style="text-align: center;"><a class="view-lesson"
+                                                href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                    class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </span> -->
+                                    </div>
+    
                                 </div>
-
                             </div>
-                        </div>
+                        </a>
+                        
                     </div>
 
                     {% endfor %}
@@ -81,11 +84,11 @@
 </div>
 {% endif %}
 
-<!-- Recommended Courses -->
-{% if rec_course_details %}
-<div class="container-fluid bg-white wow fadeInUp">
-    <section class="container recomm-courses py-5">
-        <h2 class="section-heading">Recommended <span class="text-primary">Courses</span></h2>
+
+<!-- Popular lessons -->
+<div class="container-fluid bg-light  wow fadeInUp">
+    <section class="container recomm-lessons py-3">
+        <h2 class="section-heading">Popular <span class="text-primary">Lessons</span></h2>
 
         <div class="row">
 
@@ -95,14 +98,62 @@
                 <div class="owl-carousel owl-theme">
 
                     <!-- Carousel Items  -->
-                    {% for course, first_lesson, no_of_lessons in rec_course_details %}
+                    {% for lesson, avg_rating in popu_lesson_details %}
+
+                    <div class="item mb-4">
+                        <a class="lesson-card-link" href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">
+                            <div class="card lesson-card shadow">
+                                <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                                <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+                                <div class="lesson-meta">
+                                    <p>{{lesson.course.course_name}}</p>
+    
+                                    <div>
+                                        <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                        <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+    
+                                        <!-- <span style="text-align: center;"><a class="view-lesson"
+                                                href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                    class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </span> -->
+                                    </div>
+    
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Featured Courses -->
+{% if featured_courses_details %}
+<div class="container-fluid bg-white wow fadeInUp">
+    <section class="container recomm-courses py-5">
+        <h2 class="section-heading">Featured <span class="text-primary">Courses</span></h2>
+
+        <div class="row">
+
+            <div class="col-12 m-auto">
+
+                <!-- Owl Carousel  -->
+                <div class="owl-carousel owl-theme">
+
+                    <!-- Carousel Items  -->
+                    {% for course, first_lesson, no_of_lessons in featured_courses_details %}
                     <div class="item mb-4">
                         {% if first_lesson %}
                         <a class="course-card-link" href="/{{course.course_slug}}/{{first_lesson}}">
                         {% else %}
                         <a class="course-card-link disabled" style="cursor: not-allowed;" href="#">
                         {% endif %}
-                            <div class="card course-card border-0 p-0">
+                            <div class="card course-card border-0 p-0 shadow">
                                 <div class="course-img">
                                     <img src="/media/{{course.course_pic}}" alt="">
                                 </div>
@@ -155,26 +206,27 @@
 
                     {% for lesson, avg_rating in latest_less_details %}
                     <div class="item mb-4">
-                        <div class="card lesson-card shadow">
-                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
-                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc | safe}}</span>
-
-
-                            <div class="lesson-meta">
-                                <p>{{lesson.course.course_name}}</p>
-
-                                <div>
-                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
-                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
-
-                                    <span style="text-align: center;"><a class="view-lesson"
-                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
-                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
-                                    </span>
+                        <a class="lesson-card-link" href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">
+                            <div class="card lesson-card shadow">
+                                <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                                <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+                                <div class="lesson-meta">
+                                    <p>{{lesson.course.course_name}}</p>
+    
+                                    <div>
+                                        <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                        <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+    
+                                        <!-- <span style="text-align: center;"><a class="view-lesson"
+                                                href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                    class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </span> -->
+                                    </div>
+    
                                 </div>
-
                             </div>
-                        </div>
+                        </a>
+                        
                     </div>
                     {% endfor %}
 
@@ -185,10 +237,12 @@
     </section>
 </div>
 
-<!-- Popular lessons -->
-<div class="container-fluid bg-light  wow fadeInUp">
-    <section class="container recomm-lessons py-3">
-        <h2 class="section-heading">Popular <span class="text-primary">Lessons</span></h2>
+
+<!-- Recommended Courses -->
+{% if rec_course_details %}
+<div class="container-fluid bg-white wow fadeInUp">
+    <section class="container recomm-courses py-5">
+        <h2 class="section-heading">Featured <span class="text-primary">Courses</span></h2>
 
         <div class="row">
 
@@ -198,37 +252,54 @@
                 <div class="owl-carousel owl-theme">
 
                     <!-- Carousel Items  -->
-                    {% for lesson, avg_rating in popu_lesson_details %}
-
+                    {% for course, first_lesson, no_of_lessons in rec_course_details %}
                     <div class="item mb-4">
-                        <div class="card lesson-card shadow">
-                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
-                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
-
-                            <div class="lesson-meta">
-                                <p>{{lesson.course.course_name}}</p>
-
-                                <div>
-                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
-                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
-
-                                    <span style="text-align: center;"><a class="view-lesson"
-                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
-                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
-                                    </span>
+                        {% if first_lesson %}
+                        <a class="course-card-link" href="/{{course.course_slug}}/{{first_lesson}}">
+                        {% else %}
+                        <a class="course-card-link disabled" style="cursor: not-allowed;" href="#">
+                        {% endif %}
+                            <div class="card course-card border-0 p-0 shadow">
+                                <div class="course-img">
+                                    <img src="/media/{{course.course_pic}}" alt="">
                                 </div>
+                                <div class="course-info">
+                                    <div class="dep_list">
+                                        {% for dep in course.department.all %}
+                                        <small class="category">{{dep.dep_name}}</small>
+                                        {% endfor %}
+                                    </div>
+                                    <h4>{{course.course_name}}</h4>
+                                    <div class="course-meta">
+                                        <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
+                                        {% if first_lesson %}
+                                        <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link">
+                                            <i class="fa-sharp fa-solid fa-arrow-right"></i>
+                                        </a>
+                                        {% else %}
+                                        <button disabled class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right text-center"></i>
+                                        </button>
+                                        {% endif %}
 
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
-
                     {% endfor %}
 
                 </div>
+                <a href="/courses" class="btn btn-primary view-btn">View All Courses</a>
             </div>
         </div>
+
     </section>
 </div>
+{% endif %}
+
+
+
 {% endblock content %}
 
 

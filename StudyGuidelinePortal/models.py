@@ -102,13 +102,21 @@ class Answer(models.Model):
 
     def __str__(self):
         return f'{self.ans_desc[:15]} | by | {self.user}'
+    
+class GeneratedAnswer(models.Model):
+    generated_ans = models.TextField()
+    query = models.ForeignKey(Query, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.query.query_title[:10]} | {self.generated_ans[:15]}'
 
 
 class SimilarLinks(models.Model):
     link_id = models.AutoField(primary_key=True)
     link_title = models.CharField(max_length=300)
     link_url = models.CharField(max_length=300)
-    lesson = models.ForeignKey("Lesson", on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.link_title

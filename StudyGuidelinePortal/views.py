@@ -24,45 +24,46 @@ def home(request):
 
     rec_courses = set()
     rec_lessons = []
-    latest_lessons = Lesson.objects.all().order_by('-time')
+    latest_lessons = Lesson.objects.all().order_by('-time')[:10]
 
     # Recommendation code 
-    rec_obj = LRS()
+    rec_model_obj = LRS()
+    popular_lessons_ids=rec_model_obj.popular_recomm()
+    my_recommended_list = []
     if not request.user.is_anonymous:
-        my_user = request.user
-        total_user_watchitems = len(LessonWatchTime.objects.filter(user=my_user))
+        # user is logged in 
+        logged_user = request.user
+        total_user_watchitems = len(LessonWatchTime.objects.filter(user=logged_user))
 
         #Newbie
         if total_user_watchitems > 1 and total_user_watchitems < 10: 
-            my_recommended_list = rec_obj.user_user_based_recomm(my_user.id)
-        
+            print("new user")
+            my_recommended_list = rec_model_obj.user_user_based_recomm(logged_user.id)
+            
         #Experienced user
         elif total_user_watchitems > 10:
-            print("experienced user")
+            print("Experienced user")
+            my_recommended_list = rec_model_obj.user_item_based_recomm(logged_user.id)
 
-        #Brand new sssuser
+        #Brand new user
         else:
-            print("brand new user")
-        
-        
+            # popular_lessons_ids=rec_model_obj.popular_recomm()
+            pass
 
-    popular_lessons_ids=rec_obj.popular_recomm()
-    popu_lessons = []
-    for lesson_id in popular_lessons_ids:
-            lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
-            if lesson:
-                popu_lessons.append(lesson)
+    popu_lessons = get_lesson_by_ids(popular_lessons_ids)
 
-    rec_lessons = Lesson.objects.all()
-    # popu_lessons = Lesson.objects.all()
-    rec_courses = Course.objects.all()
+    rec_lessons = get_lesson_by_ids(my_recommended_list)
+
+
+    # rec_lessons = Lesson.objects.all()
+    featured_courses = Course.objects.all()[:10]
 
 
     context = {
         'rec_lesson_details': map_lesson_details(rec_lessons),
         'latest_less_details': map_lesson_details(latest_lessons),
         'popu_lesson_details': map_lesson_details(popu_lessons),
-        'rec_course_details': map_course_details(rec_courses),
+        'featured_courses_details': map_course_details(featured_courses),
     }
     return render(request, 'index.html', context)
 
@@ -151,7 +152,7 @@ def courseLesson(request, course_name, lesson_name):
     latest_lessons = Lesson.objects.all().order_by('-time')[:6]
 
     # Links
-    links = SimilarLinks.objects.filter(lesson=lesson_details.lesson_id)
+    links = SimilarLinks.objects.filter(lesson=lesson_details.lesson_id)[0:5]
 
     website_info = []
     if links:
@@ -219,7 +220,7 @@ def latQueries(request):
 
 
 def popuQueries(request):
-    popular_queries = Query.objects.all()
+    popular_queries = Query.objects.all().order_by('-views')[:20]
 
     total_queries = len(Query.objects.all())
     total_answers = len(Answer.objects.all())
@@ -253,7 +254,23 @@ def askQuery(request):
             newQuery = Query(query_title=query_title, query_desc=query_desc,
                              course=course, user=user)
             newQuery.save()
-            return redirect('/queries')
+            print(newQuery.query_title)
+        # Generating ChatGpt answer
+            # Make a request to the ChatGPT API
+            response = openai.Completion.create(
+            engine="text-davinci-002",
+            prompt=newQuery.query_title + ". Keep the answer short of 200 words and in easy english",
+            # max_tokens=300,  # You can adjust this value
+            api_key=settings.OPENAI_API_KEY  # Include the API key in the request
+            )
+
+            if response and 'choices' in response:
+                result = response.choices[0].text
+                print(response)
+                GeneratedAnswer(generated_ans=result, query=newQuery).save()
+
+            return redirect(f'/query/{newQuery.query_slug}/')
+        
 
     else:
         queryForm = QueryForm()
@@ -289,7 +306,8 @@ def queryDetails(request, query_slug):
         'ans_like_count': ans_like_count,
         'total_queries': total_queries,
         'total_answers': total_answers,
-        'ansForm': AnswerForm()
+        'ansForm': AnswerForm(),
+        'generated_ans_chatgpt': GeneratedAnswer.objects.filter(query=query).first()
     }
     return render(request, 'answers.html', context)
 
@@ -392,22 +410,6 @@ def delAnswer(request, answer_id):
     return redirect(f'/query/{query_slug}/')
 
 def getGeneratedAnswer(request):
-
-    # Replace 'YOUR_API_KEY' with your actual OpenAI API key
-    # openai.api_key = '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'
-    
-    # Your input prompt to ChatGPT
-    # user_input = "Who is Hazrat Myhammad"
-
-    # Make a request to ChatGPT
-    # response = openai.Completion.create(
-    #     engine="davinci",  # Choose the ChatGPT engine you want to use
-    #     prompt=user_input,
-    #     # max_tokens=50  # Adjust the response length as needed
-    # )
-
-    # Extract the generated response from the API response
-    # generated_answer = response.choices[0].text.strip()
 
     generated_answer = 'Extract the generated response from the API response'
     context = {
@@ -958,6 +960,7 @@ def map_course_details(courses):
         course_details.append([course, first_lesson, no_of_lessons])
     return course_details
 
+
 def map_mycourse_details(mycourses):
     mycourse_details = []
     course = Course.objects.filter(course_id = 1).first()
@@ -969,6 +972,15 @@ def map_mycourse_details(mycourses):
         no_of_lessons = len(Lesson.objects.filter(course=course))
         mycourse_details.append([mycourse, first_lesson, no_of_lessons])
     return mycourse_details
+
+
+def get_lesson_by_ids(lesson_ids):
+    lessons=[]
+    for lesson_id in lesson_ids:
+        lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
+        if lesson:
+            lessons.append(lesson)
+    return lessons
 
 
 # Send Mail After Registration
@@ -1000,6 +1012,7 @@ def sendVerifiCodeMail(email, auth_token):
         print('mail not sent')
     print(message)
     return True
+
 
 # function to extact main url 
 def extract_main_url(full_url):
