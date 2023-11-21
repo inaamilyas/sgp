@@ -22,14 +22,6 @@
 <body>
     <section class="container-fluid login-section">
         <div class="row">
-            <!-- <div class="col-md-6 login-left">
-               
-                <h1>Login</h1>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque rem, non, laboriosam rerum
-                    mollitia doloremque omnis illum deserunt unde architecto sunt et consequuntur!</p>
-                
-                <a href="/signup" class="btn btn-dark">Sign Up here</a> -->
-            <!-- </div> -->
             <div class="col-12 login-right">
                 <div class="right-content">
                     <form action="" method="post" class="login-form" id="login-form">
@@ -38,13 +30,7 @@
                         {% if messages %}
                         {% for message in messages %}
                         <div class="alert alert-danger">
-                            {% if message == 'Account not verified. Check your mail!' or message == 'Check your mail and verify your account' %}
-                                {{message}} 
-                                <a href="#">Resend Code</a>
-                            {% else %}
-                                {{message}}
-                            {% endif %}
-                            
+                            {{message}}
                         </div>
                         {% endfor %}
                         {% endif %}

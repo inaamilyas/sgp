@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
@@ -86,12 +85,12 @@ def allCourses(request):
 # Lesson details
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])
-def lessonDetails(request, lesson_slug):
+def lessonDetails(request, lesson_id):
     if request.method == 'GET':
-        lesson = Lesson.objects.filter(lesson_slug=lesson_slug).first()
+        lesson = Lesson.objects.filter(lesson_id=lesson_id).first()
         serializer = LessonDetailsSerializer(lesson)
         return Response(serializer.data)
-    
+     
  
 # Similar lessons 
 @api_view(['GET'])

@@ -47,25 +47,27 @@
                     {% for lesson, avg_rating in lesson_details %}
 
                     <div class="item mb-4">
-                        <div class="card lesson-card shadow">
-                            <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
-                            <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
-
-                            <div class="lesson-meta">
-                                <p>{{lesson.course.course_name}}</p>
-
-                                <div>
-                                    <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
-                                    <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
-
-                                    <span style="text-align: center;"><a class="view-lesson"
-                                            href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
-                                                class="fa-sharp fa-solid fa-arrow-right"></i></a>
-                                    </span>
+                        <a class="lesson-card-link" href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}">
+                            <div class="card lesson-card shadow">
+                                <h4 class="lesson-title">{{lesson.lesson_title}}</h4>
+                                <span class="lesson-desc lesson-desc-no-style">{{lesson.lesson_desc| safe}}</span>
+                                <div class="lesson-meta">
+                                    <p>{{lesson.course.course_name}}</p>
+    
+                                    <div>
+                                        <span><i class="fa-sharp fa-regular fa-star-half-stroke"></i> {{avg_rating}}</span>
+                                        <span><i class="fa-regular fa-eye"></i> {{lesson.views}}</span>
+    
+                                        <!-- <span style="text-align: center;"><a class="view-lesson"
+                                                href="/{{lesson.course.course_slug}}/{{lesson.lesson_slug}}"><i
+                                                    class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </span> -->
+                                    </div>
+    
                                 </div>
-
                             </div>
-                        </div>
+                        </a>
+                        
                     </div>
 
                     {% endfor %}
@@ -90,32 +92,38 @@
                     <!-- Carousel Items  -->
                     {% for course, first_lesson, no_of_lessons in course_details %}
                     <div class="item mb-4">
-                        <div class="card course-card border-0 p-0">
-                            <div class="course-img">
-                                <img src="/media/{{course.course_pic}}" alt="">
-                            </div>
-                            <div class="course-info">
-                                <div class="dep_list">
-                                    {% for dep in course.department.all %}
-                                    <small class="category">{{dep.dep_name}}</small>
-                                    {% endfor %}
+                        {% if first_lesson %}
+                        <a class="course-card-link" href="/{{course.course_slug}}/{{first_lesson}}">
+                        {% else %}
+                        <a class="course-card-link disabled" style="cursor: not-allowed;" href="#">
+                        {% endif %}
+                            <div class="card course-card border-0 p-0 shadow">
+                                <div class="course-img">
+                                    <img src="/media/{{course.course_pic}}" alt="">
                                 </div>
-                                <h4>{{course.course_name}}</h4>
-                                <div class="course-meta">
-                                    <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
-                                    {% if first_lesson %}
-                                    <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link">
-                                        <i class="fa-sharp fa-solid fa-arrow-right"></i>
-                                    </a>
-                                    {% else %}
-                                    <button disabled class="course-link"><i
-                                        class="fa-sharp fa-solid fa-arrow-right text-center"></i>
-                                    </button>
-                                    {% endif %}
+                                <div class="course-info">
+                                    <div class="dep_list">
+                                        {% for dep in course.department.all %}
+                                        <small class="category">{{dep.dep_name}}</small>
+                                        {% endfor %}
+                                    </div>
+                                    <h4>{{course.course_name}}</h4>
+                                    <div class="course-meta">
+                                        <span style="font-size: 16px;">Lessons : {{no_of_lessons}}</span>
+                                        {% if first_lesson %}
+                                        <a href="/{{course.course_slug}}/{{first_lesson}}" class="course-link">
+                                            <i class="fa-sharp fa-solid fa-arrow-right"></i>
+                                        </a>
+                                        {% else %}
+                                        <button disabled class="course-link"><i
+                                            class="fa-sharp fa-solid fa-arrow-right text-center"></i>
+                                        </button>
+                                        {% endif %}
 
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     {% endfor %}
 

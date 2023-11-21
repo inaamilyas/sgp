@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.db.models import Avg
+from bs4 import BeautifulSoup
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +15,7 @@ class CourseSerializer(serializers.ModelSerializer):
     first_lesson_slug = serializers.SerializerMethodField()
     no_of_lessons = serializers.SerializerMethodField()
     department_info = serializers.SerializerMethodField()
+    # course_pic = serializers.SerializerMethodField()
 
     def get_department_info(self, obj):
         # Retrieve the department information for the course
@@ -30,9 +32,16 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_no_of_lessons(self, obj):
         return Lesson.objects.filter(course=obj).count()
     
+    # def get_course_pic(self, obj):
+    #     request = self.context.get('request')
+    #     if obj.course_pic:
+    #         return request.build_absolute_uri(obj.course_pic.url)
+    #     return None
+    
     
 
 class LessonSerializer(serializers.ModelSerializer):
+    lesson_desc = serializers.SerializerMethodField()
     class Meta:
         model = Lesson
         fields = '__all__'
@@ -47,6 +56,15 @@ class LessonSerializer(serializers.ModelSerializer):
     
     def get_course(self, course):
         return Course.objects.filter(course=course).first()
+    
+    def get_lesson_desc(self, obj):
+        # Parse the HTML description using BeautifulSoup
+        soup = BeautifulSoup(obj.lesson_desc , 'html.parser')
+
+        # Find the first two <p> tags and extract their text
+        paragraphs = soup.find_all('p')[:2]
+        lesson_desc = ' '.join(p.get_text() for p in paragraphs)
+        return lesson_desc
     
 class YoutubeVideosSerializer(serializers.ModelSerializer):
     class Meta:

@@ -254,20 +254,6 @@ def askQuery(request):
             newQuery = Query(query_title=query_title, query_desc=query_desc,
                              course=course, user=user)
             newQuery.save()
-            print(newQuery.query_title)
-        # Generating ChatGpt answer
-            # Make a request to the ChatGPT API
-            response = openai.Completion.create(
-            engine="text-davinci-002",
-            prompt=newQuery.query_title + ". Keep the answer short of 200 words and in easy english",
-            # max_tokens=300,  # You can adjust this value
-            api_key=settings.OPENAI_API_KEY  # Include the API key in the request
-            )
-
-            if response and 'choices' in response:
-                result = response.choices[0].text
-                print(response)
-                GeneratedAnswer(generated_ans=result, query=newQuery).save()
 
             return redirect(f'/query/{newQuery.query_slug}/')
         
@@ -287,7 +273,8 @@ def queryDetails(request, query_slug):
 
     total_queries = len(Query.objects.all())
     total_answers = len(Answer.objects.all())
-
+    answer_count = len(answers)
+    
     ans_like_count = []
     for answer in answers:
         total_likes = len(Like.objects.filter(answer=answer))
@@ -306,8 +293,8 @@ def queryDetails(request, query_slug):
         'ans_like_count': ans_like_count,
         'total_queries': total_queries,
         'total_answers': total_answers,
+        'answer_count':answer_count,
         'ansForm': AnswerForm(),
-        'generated_ans_chatgpt': GeneratedAnswer.objects.filter(query=query).first()
     }
     return render(request, 'answers.html', context)
 
@@ -628,11 +615,15 @@ def handleSignup(request):
 
         if sendMailAfterVerification(email, auth_token):
             messages.success(
-                request, 'Check your mail and verify your account')
+                request, 'Check your mail and verify your account.')
             
             return redirect('Login')
 
     return render(request, 'register.html')
+
+def resendVerificationCode(request):
+
+    return render(request, 'resendverificationemail.html')
 
 
 def verifyEmail(request, auth_token):
@@ -717,7 +708,7 @@ def handleLogin(request):
         prof_obj = Profile.objects.filter(user=user_obj).first()
         if not prof_obj.is_verified:
             messages.error(request, 'Account not verified. Check your mail!')
-            return redirect('Login')
+            return redirect('Login') 
 
         # Authenticate user from database
         user = authenticate(username=username, password=password)
